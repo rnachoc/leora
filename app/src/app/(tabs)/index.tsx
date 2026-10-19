@@ -68,7 +68,13 @@ export default function LibraryScreen() {
               <View style={{ marginTop: 6, gap: 6 }}>
                 <ProgressBar value={current.entry.progress ?? 0} />
                 <Text style={styles.progressLabel}>
-                  {t('library.progress', { percent: Math.round((current.entry.progress ?? 0) * 100) })}
+                  {current.book.pages
+                    ? t('book.pageOf', {
+                        page: Math.round((current.entry.progress ?? 0) * current.book.pages),
+                        pages: current.book.pages,
+                        percent: Math.round((current.entry.progress ?? 0) * 100),
+                      })
+                    : t('library.progress', { percent: Math.round((current.entry.progress ?? 0) * 100) })}
                 </Text>
               </View>
             </View>

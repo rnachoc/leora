@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookCover } from '@/components/BookCover';
+import { ProgressControl } from '@/components/ProgressControl';
 import { Icon } from '@/components/Icon';
 import { Stars } from '@/components/Stars';
 import { Button, Card, Chip, IconButton, Screen, SectionTitle, tap } from '@/components/ui';
@@ -26,6 +27,7 @@ export default function BookScreen() {
 
   const [review, setReview] = useState(entry?.review ?? '');
   const [saved, setSaved] = useState(false);
+  const [justFinished, setJustFinished] = useState(false);
   useEffect(() => setReview(entry?.review ?? ''), [entry?.review]);
 
   // Catalog books arrive without a synopsis: fetch it once and keep it on the book.
@@ -116,8 +118,44 @@ export default function BookScreen() {
                   </View>
                 </View>
 
-                {entry.status !== 'want' && (
+                {entry.status === 'reading' && (
+                  <View style={{ gap: space.md }}>
+                    <SectionTitle>{t('book.progress')}</SectionTitle>
+                    <ProgressControl
+                      value={entry.progress ?? 0}
+                      pages={book.pages || undefined}
+                      label={(v) =>
+                        book.pages
+                          ? t('book.pageOf', {
+                              page: Math.round(v * book.pages),
+                              pages: book.pages,
+                              percent: Math.round(v * 100),
+                            })
+                          : t('library.progress', { percent: Math.round(v * 100) })
+                      }
+                      onChange={(progress) => dispatch({ type: 'update', bookId: book.id, patch: { progress } })}
+                    />
+                    <Button
+                      label={t('book.finished')}
+                      icon="check"
+                      onPress={() => {
+                        tap('success');
+                        dispatch({
+                          type: 'update',
+                          bookId: book.id,
+                          patch: { status: 'read', progress: 1, readAt: today() },
+                        });
+                        setJustFinished(true);
+                      }}
+                    />
+                  </View>
+                )}
+
+                {entry.status !== 'want' && entry.status !== 'reading' && (
                   <View>
+                    {justFinished && entry.status === 'read' && (
+                      <Text style={styles.congrats}>🎉 {t('book.congrats')}</Text>
+                    )}
                     <SectionTitle>{t('book.yourRating')}</SectionTitle>
                     <Stars
                       value={entry.rating}
@@ -206,6 +244,8 @@ export default function BookScreen() {
   );
 }
 
+const today = () => new Date().toISOString().slice(0, 10);
+
 const styles = StyleSheet.create({
   backdrop: { position: 'absolute', top: 0, left: 0, right: 0, height: 560 },
   back: { position: 'absolute', left: space.lg, zIndex: 10 },
@@ -235,6 +275,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   save: { fontFamily: fonts.semibold, fontSize: 13, color: colors.gold },
+  congrats: { fontFamily: fonts.semibold, fontSize: 15, color: colors.goldBright, marginBottom: space.md },
   more: { fontFamily: fonts.semibold, fontSize: 13, color: colors.gold, marginTop: 6 },
   remove: {
     flexDirection: 'row',

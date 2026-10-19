@@ -37,6 +37,10 @@ const es = {
   'book.remove': 'Quitar de mi biblioteca',
   'book.save': 'Guardar',
   'book.readMore': 'Leer más',
+  'book.progress': 'Tu progreso',
+  'book.pageOf': 'Página {page} de {pages} · {percent}%',
+  'book.finished': 'Lo he terminado',
+  'book.congrats': '¡Enhorabuena! ¿Cuántas estrellas le das?',
   'book.readLess': 'Leer menos',
   'book.saved': 'Guardado',
 
@@ -276,6 +280,10 @@ const en: Record<StringKey, string> = {
   'book.remove': 'Remove from my library',
   'book.save': 'Save',
   'book.readMore': 'Read more',
+  'book.progress': 'Your progress',
+  'book.pageOf': 'Page {page} of {pages} · {percent}%',
+  'book.finished': 'I finished it',
+  'book.congrats': 'Congratulations! How many stars do you give it?',
   'book.readLess': 'Show less',
   'book.saved': 'Saved',
 
