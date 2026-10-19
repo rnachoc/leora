@@ -63,16 +63,25 @@ export default function WrappedScreen() {
       <Text style={styles.number}>{stats.readThisYear}</Text>
       <Text style={styles.big}>{t('wrapped.booksUnit')}</Text>
       <Text style={[styles.sub, { marginTop: space.xl }]}>
-        {t('wrapped.pages', { pages: formatNumber(stats.pagesThisYear), hours: stats.hoursThisYear })}
+        {stats.readThisYear
+          ? t('wrapped.pages', { pages: formatNumber(stats.pagesThisYear), hours: stats.hoursThisYear })
+          : t('wrapped.empty')}
       </Text>
     </View>,
     <View key="genre" style={styles.center}>
       <Text style={styles.kicker}>{t('wrapped.genre')}</Text>
-      <Text style={{ fontSize: 96, marginVertical: space.lg }}>{topGenre?.emoji}</Text>
-      <Text style={styles.huge}>{topGenre?.label[locale]}</Text>
+      {topGenre ? (
+        <>
+          <Text style={{ fontSize: 96, marginVertical: space.lg }}>{topGenre.emoji}</Text>
+          <Text style={styles.huge}>{topGenre.label[locale]}</Text>
+        </>
+      ) : (
+        <Text style={[styles.sub, styles.empty]}>{t('wrapped.empty')}</Text>
+      )}
     </View>,
     <View key="fav" style={styles.center}>
       <Text style={styles.kicker}>{t('wrapped.favorite')}</Text>
+      {!stats.favourite && <Text style={[styles.sub, styles.empty]}>{t('wrapped.empty')}</Text>}
       {stats.favourite && (
         <>
           <BookCover book={stats.favourite.book} width={180} style={{ marginVertical: space.xl }} />
@@ -157,5 +166,6 @@ const styles = StyleSheet.create({
   huge: { fontFamily: fonts.display, fontSize: 44, lineHeight: 50, color: '#fff', textAlign: 'center', marginTop: 12 },
   number: { fontFamily: fonts.display, fontSize: 140, lineHeight: 150, color: '#fff' },
   big: { fontFamily: fonts.display, fontSize: 28, lineHeight: 34, color: '#fff', textAlign: 'center' },
+  empty: { marginTop: space.xl, maxWidth: 280 },
   sub: { fontFamily: fonts.body, fontSize: 16, lineHeight: 23, color: 'rgba(255,255,255,0.8)', textAlign: 'center' },
 });
