@@ -9,7 +9,8 @@ import { findCover } from './catalog';
  * in memory and on the device, so each book is looked up only once.
  */
 
-const STORAGE_KEY = 'leora:covers:v1';
+// v2: improved matching — earlier cached results are discarded.
+const STORAGE_KEY = 'leora:covers:v2';
 const cache = new Map<string, string | null>();
 const inFlight = new Map<string, Promise<string | null>>();
 let loaded: Promise<void> | null = null;
