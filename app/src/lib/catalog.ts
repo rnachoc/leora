@@ -227,42 +227,57 @@ async function limited<T>(task: () => Promise<T>): Promise<T> {
   }
 }
 
-type CoverDoc = { title: string; author_name?: string[]; cover_i?: number };
+type CoverDoc = { title: string; author_name?: string[]; cover_i?: number; language?: string[] };
 
 const coverUrl = (id: number) => `${OL_COVERS}/${id}-M.jpg`;
 
-/** "La sombra del viento" matches "La sombra del viento" or "La sombra del viento: novela", not a sequel or spin-off. */
+/** Title without series/edition suffixes: "Alas de sangre (Empíreo 1)" → "alas de sangre". */
+function baseTitle(t: string) {
+  return norm(t)
+    .replace(/\s*[([].*$/, '')
+    .split(/\s+\/\s+|:/)[0]
+    .replace(/[^\p{L}\p{N} ]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Same book title, ignoring series and subtitles — but "Hábitos atómicos en acción" ≠ "Hábitos atómicos". */
 function sameTitle(a: string, b: string) {
-  const x = norm(a)
-    .replace(/[^\p{L}\p{N} ]/gu, '')
-    .trim();
-  const y = norm(b)
-    .replace(/[^\p{L}\p{N} ]/gu, '')
-    .trim();
-  return x === y || norm(a).startsWith(norm(b) + ':') || norm(b).startsWith(norm(a) + ':');
+  return baseTitle(a) === baseTitle(b);
+}
+
+/** Prefer Spanish editions, then English; never other languages (no German cover in a Spanish shelf). */
+function languageRank(d: CoverDoc) {
+  if (!d.language?.length) return 2;
+  if (d.language.includes('spa')) return 0;
+  if (d.language.includes('eng')) return 1;
+  return 9;
 }
 
 /**
  * Finds a real cover for a title + author, or undefined.
- * 1. Title + author search, accepting only an exact title match (avoids
- *    picking "Hábitos atómicos en acción" for "Hábitos atómicos").
- * 2. Broad search, accepting the top work by the same author — this finds
- *    Spanish titles indexed under the original work (e.g. "Proyecto Hail Mary").
+ * 1. Title + author search, accepting only the same title (series and
+ *    subtitles ignored), Spanish editions first.
+ * 2. Broad search, accepting the best Spanish/English work by the same author
+ *    — this finds Spanish titles indexed under the original work.
  */
 export function findCover(title: string, author: string): Promise<string | undefined> {
   const mainAuthor = author.split(/,| y | and /)[0].trim();
   const surname = norm(mainAuthor.split(' ').pop() ?? mainAuthor);
+  const best = (docs: CoverDoc[]) =>
+    docs.filter((d) => d.cover_i && languageRank(d) < 9).sort((a, b) => languageRank(a) - languageRank(b))[0];
+
   return limited(async () => {
     const byTitle = await getJson<{ docs: CoverDoc[] }>(
-      `${OL}/search.json?title=${encodeURIComponent(title)}&author=${encodeURIComponent(mainAuthor)}&fields=title,cover_i&limit=10`,
+      `${OL}/search.json?title=${encodeURIComponent(title)}&author=${encodeURIComponent(mainAuthor)}&fields=title,cover_i,language&limit=10`,
     );
-    const exact = byTitle.docs.find((d) => d.cover_i && sameTitle(d.title, title));
+    const exact = best(byTitle.docs.filter((d) => sameTitle(d.title, title)));
     if (exact?.cover_i) return coverUrl(exact.cover_i);
 
     const broad = await getJson<{ docs: CoverDoc[] }>(
-      `${OL}/search.json?q=${encodeURIComponent(`${title} ${mainAuthor}`)}&fields=title,author_name,cover_i&limit=5`,
+      `${OL}/search.json?q=${encodeURIComponent(`${title} ${mainAuthor}`)}&fields=title,author_name,cover_i,language&limit=5`,
     );
-    const top = broad.docs.find((d) => d.cover_i && d.author_name?.some((a) => norm(a).includes(surname)));
+    const top = best(broad.docs.filter((d) => d.author_name?.some((a) => norm(a).includes(surname))));
     return top?.cover_i ? coverUrl(top.cover_i) : undefined;
   });
 }
