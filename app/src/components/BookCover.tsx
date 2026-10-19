@@ -1,6 +1,9 @@
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import type { Book } from '@/data/books';
+import { useCoverUrl } from '@/lib/covers';
 import { fonts, shade, withAlpha } from '@/theme/tokens';
 
 /** Stable small integer from a string — used to vary cover/spine designs. */
@@ -25,10 +28,13 @@ export function inkFor(hex: string) {
 type Props = { book: Book; width: number; style?: ViewStyle; shadow?: boolean };
 
 /**
- * Generated cover: in the prototype every cover is designed from the book's
- * colour, so the library looks coherent. Real covers come from the catalog.
+ * Real cover from the catalog when there is one; otherwise (and while it
+ * loads, or if it fails) a cover generated from the book's colour.
  */
 export function BookCover({ book, width, style, shadow = true }: Props) {
+  const coverUrl = useCoverUrl(book);
+  const [failed, setFailed] = useState<string>();
+  const showImage = Boolean(coverUrl) && failed !== coverUrl;
   const height = Math.round(width * 1.5);
   const ink = inkFor(book.color);
   const variant = hashOf(book.id) % 3;
@@ -64,10 +70,7 @@ export function BookCover({ book, width, style, shadow = true }: Props) {
         )}
         {variant === 1 && (
           <View
-            style={[
-              styles.band,
-              { top: height * 0.58, height: 3 * scale, backgroundColor: withAlpha(ink, 0.5) },
-            ]}
+            style={[styles.band, { top: height * 0.58, height: 3 * scale, backgroundColor: withAlpha(ink, 0.5) }]}
           />
         )}
         {variant === 2 && (
@@ -116,6 +119,23 @@ export function BookCover({ book, width, style, shadow = true }: Props) {
             {book.author}
           </Text>
         </View>
+
+        {showImage && (
+          <>
+            <Image
+              source={{ uri: coverUrl }}
+              style={StyleSheet.absoluteFill}
+              contentFit="cover"
+              transition={250}
+              accessibilityLabel={book.title}
+              onError={() => setFailed(coverUrl)}
+            />
+            <View
+              style={[styles.hinge, { width: Math.max(2, 4 * scale), backgroundColor: withAlpha('#000000', 0.22) }]}
+            />
+            <View style={[styles.hingeLight, { left: Math.max(2, 4 * scale) }]} />
+          </>
+        )}
 
         {/* Sheen */}
         <LinearGradient
