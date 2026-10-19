@@ -54,21 +54,22 @@ async function resolve(book: Book): Promise<string | null> {
 
 /** The best cover URL available for a book, or undefined while unknown / when there is none. */
 export function useCoverUrl(book: Book): string | undefined {
-  const [url, setUrl] = useState<string | undefined>(() => book.coverUrl ?? cache.get(book.id) ?? undefined);
+  // Resolved lookups are tagged with the book id, so a recycled component never
+  // shows the previous book's cover while the new one resolves.
+  const [resolved, setResolved] = useState<{ id: string; url?: string }>();
 
   useEffect(() => {
-    if (book.coverUrl) {
-      setUrl(book.coverUrl);
-      return;
-    }
+    if (book.coverUrl) return;
     let alive = true;
-    resolve(book).then((u) => alive && setUrl(u ?? undefined));
+    resolve(book).then((u) => alive && setResolved({ id: book.id, url: u ?? undefined }));
     return () => {
       alive = false;
     };
   }, [book]);
 
-  return url;
+  if (book.coverUrl) return book.coverUrl;
+  if (resolved?.id === book.id) return resolved.url;
+  return cache.get(book.id) ?? undefined;
 }
 
 /** Forget cached lookups (used when resetting the demo). */
