@@ -169,6 +169,7 @@ export default function ProfileScreen() {
         {/* Data */}
         <Card style={{ gap: space.md }}>
           <SectionTitle>{t('profile.data')}</SectionTitle>
+          <Button size="sm" variant="secondary" icon="compass" label={t('profile.guide')} onPress={() => router.push('/guide')} />
           <Text style={type.small}>{t('profile.resetHint')}</Text>
           <Button
             size="sm"

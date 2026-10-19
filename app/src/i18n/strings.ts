@@ -113,8 +113,8 @@ const es = {
   'profile.premiumCta': 'Hazte Premium',
   'profile.premiumActive': 'Premium activo',
   'profile.data': 'Datos',
-  'profile.reset': 'Restablecer biblioteca de demo',
-  'profile.resetHint': 'Borra tus cambios guardados en este dispositivo y vuelve a la biblioteca de ejemplo.',
+  'profile.reset': 'Empezar de cero',
+  'profile.resetHint': 'Borra lo guardado en este dispositivo y vuelve a la bienvenida para crear tu biblioteca o explorar la de ejemplo.',
   'profile.resetConfirm': 'Pulsa otra vez para confirmar',
 
   'badge.first': 'Primer libro',
@@ -335,8 +335,8 @@ const en: Record<StringKey, string> = {
   'profile.premiumCta': 'Go Premium',
   'profile.premiumActive': 'Premium active',
   'profile.data': 'Data',
-  'profile.reset': 'Reset demo library',
-  'profile.resetHint': 'Clears your changes saved on this device and restores the sample library.',
+  'profile.reset': 'Start over',
+  'profile.resetHint': 'Clears what is saved on this device and returns to the welcome screen to create your library or explore the sample one.',
   'profile.resetConfirm': 'Tap again to confirm',
 
   'badge.first': 'First book',
