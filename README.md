@@ -15,7 +15,7 @@ Leora is a mobile app for readers who want a gorgeous personal library of everyt
 
 🇬🇧 English · 🇪🇸 Español
 
-**[▶ Try the live demo](https://rnachoc.github.io/leora/app/)** · [Landing page](https://rnachoc.github.io/leora/)
+**[▶ Try the live demo](https://rnachoc.github.io/leora/app/)**
 
 </div>
 
@@ -51,7 +51,6 @@ Leora is a mobile app for readers who want a gorgeous personal library of everyt
 | 📷 | **Add books in seconds** | Search by title/author, scan the ISBN barcode, or snap a photo of your shelf and let AI recognise the spines. |
 | ⭐ | **Rate & remember** | Star ratings, a short review, read date and status: *read, reading, want to read, did not finish*. |
 | 🔮 | **AI recommendations** | Pick a genre, a mood ("something light", "break my heart") or "like this book" — get 3 picks, each with *why* it fits your taste. |
-| 🛒 | **Buy in one tap** | Links to Amazon, Casa del Libro, Fnac/Kobo and audiobook platforms. |
 | 🏆 | **Goals & Wrapped** | Yearly reading goal, achievement badges and a shareable year-in-review. |
 | 🌐 | **Public profile** | Share your library with a link. |
 
@@ -60,7 +59,7 @@ Leora is a mobile app for readers who want a gorgeous personal library of everyt
 ```
 leora/
 ├── app/        # Mobile app — Expo (React Native) + TypeScript + expo-router
-├── landing/    # Marketing landing page with waitlist
+├── landing/    # Project landing page
 ├── docs/       # Product spec, architecture and roadmap
 └── .github/    # CI workflows and issue/PR templates
 ```
@@ -89,7 +88,6 @@ npm run typecheck    # TypeScript strict check
 | Auth | Email · Google · Sign in with Apple | Apple sign-in is mandatory on iOS when offering Google |
 | Catalog | Open Library (live) · Google Books optional | Real books and covers — the AI never invents titles or links |
 | AI | LLM ranking over real catalog candidates | Explainable picks grounded in the user's library |
-| Monetization | Freemium (RevenueCat) + affiliate links | 3 free recommendations/month, Premium unlimited |
 
 More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -97,15 +95,12 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 - [x] Product definition
 - [x] Interactive prototype
-- [x] Waitlist landing page
-- [ ] Paid traffic validation
 - [x] Real catalog search and covers
 - [x] Onboarding questionnaire and app guide
 - [ ] Supabase backend and auth
 - [x] Barcode scanner
 - [ ] Shelf-photo recognition
 - [ ] AI recommendation engine
-- [ ] Premium subscription & affiliate links
 - [ ] App Store / Google Play launch
 - [ ] Social layer: friends, verified author profiles and posts
 
