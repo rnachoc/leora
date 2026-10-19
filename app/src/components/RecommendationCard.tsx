@@ -9,7 +9,7 @@ import { genreLabel } from '@/data/taxonomy';
 import { useI18n } from '@/i18n/I18nProvider';
 import type { Recommendation } from '@/lib/recommend';
 import { useLibrary, type DismissReason } from '@/store/LibraryProvider';
-import { colors, fonts, radius, space, type, withAlpha } from '@/theme/tokens';
+import { colors, radius, space, type, withAlpha } from '@/theme/tokens';
 
 const REASONS: DismissReason[] = ['read', 'notForMe', 'tooLong', 'author'];
 
