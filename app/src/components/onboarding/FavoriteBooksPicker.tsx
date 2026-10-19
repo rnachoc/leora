@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BookCover } from '../BookCover';
 import { Icon } from '../Icon';
 import { tap } from '../ui';
-import { CATALOG, registerBooks, type Book } from '@/data/books';
+import { CATALOG, type Book } from '@/data/books';
 import { useI18n } from '@/i18n/I18nProvider';
-import { searchBooks } from '@/lib/catalog';
+import { useCatalogSearch } from '@/lib/useCatalogSearch';
 import { colors, fonts, radius, space, type } from '@/theme/tokens';
 
 /** Well-known titles first, so most people find a favourite without typing. */
@@ -39,8 +39,8 @@ type Props = { selected: string[]; onToggle: (book: Book) => void };
 export function FavoriteBooksPicker({ selected, onToggle }: Props) {
   const { t } = useI18n();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { books: results, status, active } = useCatalogSearch(query, { limit: 12 });
+  const loading = status === 'loading';
   const [width, setWidth] = useState(0);
   const cell = width ? (width - GAP * (COLS - 1)) / COLS : 0;
 
@@ -49,31 +49,8 @@ export function FavoriteBooksPicker({ selected, onToggle }: Props) {
     [],
   );
 
-  useEffect(() => {
-    const q = query.trim();
-    if (q.length < 3) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-    const controller = new AbortController();
-    setLoading(true);
-    const timer = setTimeout(() => {
-      searchBooks(q, controller.signal)
-        .then((books) => {
-          registerBooks(books);
-          setResults(books.slice(0, 12));
-        })
-        .catch(() => {})
-        .finally(() => !controller.signal.aborted && setLoading(false));
-    }, 400);
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, [query]);
 
-  const books = query.trim().length >= 3 ? results : popular;
+  const books = active ? results : popular;
 
   return (
     <View style={{ gap: space.lg }}>
@@ -91,7 +68,7 @@ export function FavoriteBooksPicker({ selected, onToggle }: Props) {
       </View>
 
       <View style={styles.row}>
-        <Text style={type.label}>{query.trim().length >= 3 ? t('onb.books.results') : t('onb.books.popular')}</Text>
+        <Text style={type.label}>{active ? t('onb.books.results') : t('onb.books.popular')}</Text>
         <Text style={[type.label, { color: colors.gold }]}>{t('onb.books.selected', { count: selected.length })}</Text>
       </View>
 

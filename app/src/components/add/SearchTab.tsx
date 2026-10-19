@@ -1,20 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Icon } from '../Icon';
 import { AddBookRow } from './AddBookRow';
-import { CATALOG, registerBooks, type Book } from '@/data/books';
+import { CATALOG } from '@/data/books';
 import { useI18n } from '@/i18n/I18nProvider';
-import { searchBooks } from '@/lib/catalog';
+import { norm } from '@/lib/text';
+import { useCatalogSearch } from '@/lib/useCatalogSearch';
 import { colors, fonts, radius, space, type } from '@/theme/tokens';
-
-/** Accent- and case-insensitive text normalisation for search. */
-const norm = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
-
-const DEBOUNCE_MS = 400;
 
 /**
  * Search: instant matches from books Leora already knows, then live results
@@ -23,50 +15,17 @@ const DEBOUNCE_MS = 400;
 export function SearchTab() {
   const { t } = useI18n();
   const [query, setQuery] = useState('');
-  const [remote, setRemote] = useState<Book[]>([]);
-  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-
   const q = norm(query.trim());
+  const { books: remote, status } = useCatalogSearch(query);
 
   const local = useMemo(
     () => (q.length < 2 ? [] : CATALOG.filter((b) => norm(b.title).includes(q) || norm(b.author).includes(q))),
     [q],
   );
 
-  useEffect(() => {
-    setRemote([]);
-    if (q.length < 3) {
-      setStatus('idle');
-      return;
-    }
-    const controller = new AbortController();
-    setStatus('loading');
-    const timer = setTimeout(() => {
-      searchBooks(query, controller.signal)
-        .then((books) => {
-          registerBooks(books);
-          setRemote(books);
-          setStatus('idle');
-        })
-        .catch((err) => {
-          if (controller.signal.aborted) return;
-          console.warn('[Leora] catalog search failed', err);
-          setStatus('error');
-        });
-    }, DEBOUNCE_MS);
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q]);
-
   // Don't repeat a catalog result that matches a book we already show.
   const seen = new Set(local.map((b) => `${norm(b.title)}|${norm(b.author.split(',')[0])}`));
-  const results = [
-    ...local,
-    ...remote.filter((b) => !seen.has(`${norm(b.title)}|${norm(b.author.split(',')[0])}`)),
-  ];
+  const results = [...local, ...remote.filter((b) => !seen.has(`${norm(b.title)}|${norm(b.author.split(',')[0])}`))];
 
   return (
     <View style={{ gap: space.lg }}>
