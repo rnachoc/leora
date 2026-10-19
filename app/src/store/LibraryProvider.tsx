@@ -27,9 +27,10 @@ export type OnboardingAnswers = {
 export type DismissReason = 'read' | 'notForMe' | 'tooLong' | 'author';
 export type Dismissal = { bookId: string; reason: DismissReason };
 
-type State = { entries: LibraryEntry[]; profile: Profile; dismissed: Dismissal[] };
+export type LibraryState = { entries: LibraryEntry[]; profile: Profile; dismissed: Dismissal[] };
+type State = LibraryState;
 
-type Action =
+export type LibraryAction =
   | { type: 'add'; bookId: string; status: ReadingStatus; rating?: number }
   | { type: 'update'; bookId: string; patch: Partial<Omit<LibraryEntry, 'bookId'>> }
   | { type: 'remove'; bookId: string }
@@ -41,13 +42,14 @@ type Action =
   | { type: 'startDemo' }
   | { type: 'completeOnboarding'; answers: OnboardingAnswers };
 
-const DEMO_STATE: State = { entries: DEMO_LIBRARY, profile: DEMO_PROFILE, dismissed: [] };
+export const DEMO_STATE: State = { entries: DEMO_LIBRARY, profile: DEMO_PROFILE, dismissed: [] };
 
 /** Bump the version when the stored shape changes incompatibly. */
 const STORAGE_KEY = 'leora:library:v1';
 type Stored = State & { books: Book[] };
 
-function reducer(state: State, action: Action): State {
+/** Pure state transitions for the library (exported for unit tests). */
+export function libraryReducer(state: State, action: LibraryAction): State {
   switch (action.type) {
     case 'add': {
       if (state.entries.some((e) => e.bookId === action.bookId)) return state;
@@ -120,7 +122,7 @@ type LibraryValue = State & {
   entryFor: (bookId: string) => LibraryEntry | undefined;
   recommendationsLeft: number;
   canRecommend: boolean;
-  dispatch: React.Dispatch<Action>;
+  dispatch: React.Dispatch<LibraryAction>;
 };
 
 const LibraryContext = createContext<LibraryValue | null>(null);
@@ -131,7 +133,7 @@ const LibraryContext = createContext<LibraryValue | null>(null);
  * is restored. Production will sync the same state to Supabase.
  */
 export function LibraryProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, DEMO_STATE);
+  const [state, dispatch] = useReducer(libraryReducer, DEMO_STATE);
   const [hydrated, setHydrated] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
