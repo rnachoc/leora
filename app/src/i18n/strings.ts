@@ -12,6 +12,10 @@ const es = {
   'library.view.grid': 'Cuadrícula',
   'library.empty': 'Aún no hay libros aquí',
   'library.add': 'Añadir libro',
+  'library.starter.title': 'Tu estantería está empezando',
+  'library.starter.body': 'Añade los libros que ya has leído: cuantos más tengas, mejor te recomendará Leora.',
+  'library.starter.search': 'Buscar libros',
+  'library.starter.photo': 'Foto de mi estantería',
 
   'status.all': 'Todos',
   'status.read': 'Leído',
@@ -234,6 +238,10 @@ const en: Record<StringKey, string> = {
   'library.view.grid': 'Grid',
   'library.empty': 'No books here yet',
   'library.add': 'Add book',
+  'library.starter.title': 'Your shelf is just getting started',
+  'library.starter.body': 'Add the books you have already read: the more you add, the better Leora recommends.',
+  'library.starter.search': 'Search books',
+  'library.starter.photo': 'Photo of my shelf',
 
   'status.all': 'All',
   'status.read': 'Read',

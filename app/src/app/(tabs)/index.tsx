@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BookCover } from '@/components/BookCover';
 import { Bookshelf } from '@/components/Bookshelf';
 import { CoverGrid } from '@/components/CoverGrid';
-import { Card, Chip, IconButton, ProgressBar, Screen, Segmented, tap } from '@/components/ui';
+import { Button, Card, Chip, IconButton, ProgressBar, Screen, Segmented, tap } from '@/components/ui';
 import { STATUSES, type ReadingStatus } from '@/data/library';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useLibrary } from '@/store/LibraryProvider';
@@ -76,6 +76,32 @@ export default function LibraryScreen() {
         </Pressable>
       )}
 
+      {items.length < 5 && (
+        <View style={{ paddingHorizontal: space.xl, marginTop: current ? space.lg : 0 }}>
+          <Card style={styles.starter}>
+            <Text style={type.heading}>{t('library.starter.title')}</Text>
+            <Text style={type.small}>{t('library.starter.body')}</Text>
+            <View style={styles.starterActions}>
+              <Button
+                size="sm"
+                icon="search"
+                label={t('library.starter.search')}
+                style={{ flex: 1 }}
+                onPress={() => router.push('/add')}
+              />
+              <Button
+                size="sm"
+                variant="secondary"
+                icon="camera"
+                label={t('library.starter.photo')}
+                style={{ flex: 1 }}
+                onPress={() => router.push({ pathname: '/add', params: { tab: 'photo' } })}
+              />
+            </View>
+          </Card>
+        </View>
+      )}
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -127,6 +153,8 @@ const styles = StyleSheet.create({
     marginBottom: space.xl,
   },
   reading: { flexDirection: 'row', gap: space.lg, alignItems: 'center' },
+  starter: { gap: space.sm, borderColor: colors.gold },
+  starterActions: { flexDirection: 'row', gap: space.sm, marginTop: space.sm },
   progressLabel: { fontFamily: fonts.medium, fontSize: 12, color: colors.textMuted },
   filters: { gap: 8, paddingHorizontal: space.xl, paddingVertical: space.xl },
   viewToggle: { paddingHorizontal: space.xl, marginBottom: space.xl },
