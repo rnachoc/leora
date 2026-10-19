@@ -6,9 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookCover } from '@/components/BookCover';
 import { Icon } from '@/components/Icon';
 import { Stars } from '@/components/Stars';
-import { Button, Card, IconButton, Screen, SectionTitle, Segmented, tap } from '@/components/ui';
+import { Button, Card, Chip, IconButton, Screen, SectionTitle, tap } from '@/components/ui';
 import { getBook } from '@/data/books';
-import { STATUSES, type ReadingStatus } from '@/data/library';
+import { STATUSES } from '@/data/library';
 import { genreLabel } from '@/data/taxonomy';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useLibrary } from '@/store/LibraryProvider';
@@ -73,11 +73,16 @@ export default function BookScreen() {
               <Card style={{ gap: space.lg }}>
                 <View>
                   <SectionTitle>{t('book.status')}</SectionTitle>
-                  <Segmented<ReadingStatus>
-                    value={entry.status}
-                    onChange={(status) => dispatch({ type: 'update', bookId: book.id, patch: { status } })}
-                    options={STATUSES.map((s) => ({ value: s, label: t(`status.${s}`) }))}
-                  />
+                  <View style={styles.statusRow}>
+                    {STATUSES.map((s) => (
+                      <Chip
+                        key={s}
+                        label={t(`status.${s}`)}
+                        selected={entry.status === s}
+                        onPress={() => dispatch({ type: 'update', bookId: book.id, patch: { status: s } })}
+                      />
+                    ))}
+                  </View>
                 </View>
 
                 {entry.status !== 'want' && (
@@ -188,6 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.goldDim,
   },
   tagText: { fontFamily: fonts.medium, fontSize: 12, color: colors.goldBright },
+  statusRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   body: { paddingHorizontal: space.xl, marginTop: space.xl, gap: space.lg },
   review: {
     minHeight: 90,
