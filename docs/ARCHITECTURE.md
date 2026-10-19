@@ -25,6 +25,14 @@ Recommendation is a two-step pipeline running in an Edge Function:
 
 Store links are generated server-side from the ISBN, so they can never be hallucinated.
 
+### Live catalog and covers (implemented)
+- **Search** uses Open Library (`search.json`) — free, no API key, CORS-enabled. Results are de-duplicated (Open Library often has several work records per book) and their free-form subjects are mapped to Leora genres and moods so they feed the recommender. If `EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY` is set, search uses Google Books instead (unauthenticated Google Books requests have no quota).
+- **Synopses** are fetched lazily from the work record the first time a book is opened.
+- **Covers**: catalog books carry their cover URL. Books without one (the bundled sample library) are resolved by title + author — exact title first (series/subtitles ignored), then a broad search restricted to the same author — preferring Spanish editions, then English, never other languages. Every lookup is cached on the device. The generated colour cover is always rendered underneath, so loading, missing or broken images never leave an empty box.
+
+### On-device persistence (implemented)
+The library, profile, quota and recommendation feedback are stored with AsyncStorage (localStorage on web) together with the live-catalog books they reference, and restored on launch. Supabase sync will replace this as the source of truth once accounts exist.
+
 ### Shelf-photo recognition
 Vision model extracts `(title, author)` pairs from spines → each is matched against the catalog → the user confirms in a checklist before anything is saved.
 
