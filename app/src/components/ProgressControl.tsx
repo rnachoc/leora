@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRef, useState } from 'react';
-import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { tap } from './ui';
 import { colors, fonts, radius, space } from '@/theme/tokens';
 
@@ -21,7 +21,7 @@ const clamp = (n: number) => Math.min(1, Math.max(0, n));
  */
 export function ProgressControl({ value, pages, label, onChange }: Props) {
   const [draft, setDraft] = useState<number>();
-  const width = useRef(0);
+  const [width, setWidth] = useState(0);
   const shown = draft ?? value;
   const step = pages ? 10 / pages : 0.05;
 
@@ -31,19 +31,19 @@ export function ProgressControl({ value, pages, label, onChange }: Props) {
     onChange(clamp(rounded));
   };
 
-  const pan = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => setDraft(clamp(e.nativeEvent.locationX / (width.current || 1))),
-      onPanResponderMove: (e) => setDraft(clamp(e.nativeEvent.locationX / (width.current || 1))),
-      onPanResponderRelease: (e) => {
-        tap('select');
-        commit(clamp(e.nativeEvent.locationX / (width.current || 1)));
-      },
-      onPanResponderTerminationRequest: () => false,
-    }),
-  ).current;
+  // Plain responder props (works on iOS, Android and web) — no PanResponder or refs needed.
+  const at = (x: number) => clamp(x / (width || 1));
+  const responder = {
+    onStartShouldSetResponder: () => true,
+    onMoveShouldSetResponder: () => true,
+    onResponderTerminationRequest: () => false,
+    onResponderGrant: (e: GestureResponderEvent) => setDraft(at(e.nativeEvent.locationX)),
+    onResponderMove: (e: GestureResponderEvent) => setDraft(at(e.nativeEvent.locationX)),
+    onResponderRelease: (e: GestureResponderEvent) => {
+      tap('select');
+      commit(at(e.nativeEvent.locationX));
+    },
+  };
 
   return (
     <View style={{ gap: space.md }}>
@@ -61,10 +61,10 @@ export function ProgressControl({ value, pages, label, onChange }: Props) {
 
         <View
           style={styles.hit}
-          onLayout={(e) => (width.current = e.nativeEvent.layout.width)}
+          onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
           accessibilityRole="adjustable"
           accessibilityValue={{ min: 0, max: 100, now: Math.round(shown * 100) }}
-          {...pan.panHandlers}
+          {...responder}
         >
           <View style={styles.track} pointerEvents="none">
             <LinearGradient
