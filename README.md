@@ -6,8 +6,8 @@
 
 Leora is a mobile app for readers who want a gorgeous personal library of everything they've read, and smart, explainable recommendations for what to read next.
 
-[![Expo](https://img.shields.io/badge/Expo-SDK%2054-000020?logo=expo&logoColor=white)](https://expo.dev)
-[![React Native](https://img.shields.io/badge/React%20Native-0.81-61DAFB?logo=react&logoColor=black)](https://reactnative.dev)
+[![Expo](https://img.shields.io/badge/Expo-SDK%2058-000020?logo=expo&logoColor=white)](https://expo.dev)
+[![React Native](https://img.shields.io/badge/React%20Native-0.88-61DAFB?logo=react&logoColor=black)](https://reactnative.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-planned-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![CI](https://github.com/rnachoc/leora/actions/workflows/ci.yml/badge.svg)](https://github.com/rnachoc/leora/actions/workflows/ci.yml)
@@ -18,6 +18,22 @@ Leora is a mobile app for readers who want a gorgeous personal library of everyt
 </div>
 
 ---
+
+<p align="center">
+  <img src="docs/screenshots/library.jpg" width="200" alt="Bookshelf view" />
+  <img src="docs/screenshots/discover.jpg" width="200" alt="AI recommendations" />
+  <img src="docs/screenshots/add.jpg" width="200" alt="Shelf-photo import" />
+  <img src="docs/screenshots/profile.jpg" width="200" alt="Profile and goal" />
+</p>
+
+<details>
+<summary>More screens</summary>
+<p align="center">
+  <img src="docs/screenshots/grid.jpg" width="200" alt="Cover grid view" />
+  <img src="docs/screenshots/book.jpg" width="200" alt="Book detail" />
+  <img src="docs/screenshots/wrapped.jpg" width="200" alt="Year-in-books Wrapped" />
+</p>
+</details>
 
 ## ✨ What it does
 
@@ -70,8 +86,9 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## 📍 Roadmap
 
 - [x] Product definition
-- [ ] Interactive prototype
-- [ ] Waitlist landing + paid traffic validation
+- [x] Interactive prototype
+- [x] Waitlist landing page
+- [ ] Paid traffic validation
 - [ ] Supabase backend, auth and real catalog search
 - [ ] Barcode scanner & shelf-photo recognition
 - [ ] AI recommendation engine
