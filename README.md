@@ -102,7 +102,8 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - [x] Real catalog search and covers
 - [x] Onboarding questionnaire and app guide
 - [ ] Supabase backend and auth
-- [ ] Barcode scanner & shelf-photo recognition
+- [x] Barcode scanner
+- [ ] Shelf-photo recognition
 - [ ] AI recommendation engine
 - [ ] Premium subscription & affiliate links
 - [ ] App Store / Google Play launch
