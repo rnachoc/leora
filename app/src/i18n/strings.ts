@@ -32,6 +32,8 @@ const es = {
   'book.moreLikeThis': 'Recomiéndame algo parecido',
   'book.remove': 'Quitar de mi biblioteca',
   'book.save': 'Guardar',
+  'book.readMore': 'Leer más',
+  'book.readLess': 'Leer menos',
   'book.saved': 'Guardado',
 
   'add.title': 'Añadir libro',
@@ -204,6 +206,8 @@ const en: Record<StringKey, string> = {
   'book.moreLikeThis': 'Recommend something similar',
   'book.remove': 'Remove from my library',
   'book.save': 'Save',
+  'book.readMore': 'Read more',
+  'book.readLess': 'Show less',
   'book.saved': 'Saved',
 
   'add.title': 'Add a book',

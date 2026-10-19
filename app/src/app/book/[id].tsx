@@ -7,10 +7,11 @@ import { BookCover } from '@/components/BookCover';
 import { Icon } from '@/components/Icon';
 import { Stars } from '@/components/Stars';
 import { Button, Card, Chip, IconButton, Screen, SectionTitle, tap } from '@/components/ui';
-import { getBook } from '@/data/books';
+import { getBook, registerBooks } from '@/data/books';
 import { STATUSES } from '@/data/library';
 import { genreLabel } from '@/data/taxonomy';
 import { useI18n } from '@/i18n/I18nProvider';
+import { fetchDescription } from '@/lib/catalog';
 import { useLibrary } from '@/store/LibraryProvider';
 import { colors, fonts, radius, space, type, withAlpha } from '@/theme/tokens';
 
@@ -26,6 +27,23 @@ export default function BookScreen() {
   const [review, setReview] = useState(entry?.review ?? '');
   const [saved, setSaved] = useState(false);
   useEffect(() => setReview(entry?.review ?? ''), [entry?.review]);
+
+  // Catalog books arrive without a synopsis: fetch it once and keep it on the book.
+  const [synopsis, setSynopsis] = useState(book?.synopsis[locale] ?? '');
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (!book) return;
+    if (book.synopsis[locale]) return setSynopsis(book.synopsis[locale]);
+    const controller = new AbortController();
+    fetchDescription(book, controller.signal)
+      .then((text) => {
+        if (!text) return;
+        registerBooks([{ ...book, synopsis: { es: text, en: text } }]);
+        setSynopsis(text);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [book, locale]);
 
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
@@ -53,9 +71,13 @@ export default function BookScreen() {
           </View>
           <Text style={[type.title, styles.center, { marginTop: space.xl }]}>{book.title}</Text>
           <Text style={[type.body, styles.center, { color: colors.textMuted, marginTop: 4 }]}>{book.author}</Text>
-          <Text style={[type.small, styles.center, { marginTop: 8 }]}>
-            {book.year} · {t('book.pages', { pages: book.pages })}
-          </Text>
+          {(book.year > 0 || book.pages > 0) && (
+            <Text style={[type.small, styles.center, { marginTop: 8 }]}>
+              {[book.year > 0 && String(book.year), book.pages > 0 && t('book.pages', { pages: book.pages })]
+                .filter(Boolean)
+                .join(' · ')}
+            </Text>
+          )}
           <View style={styles.tags}>
             {book.genres.map((g) => (
               <View key={g} style={styles.tag}>
@@ -66,7 +88,16 @@ export default function BookScreen() {
         </View>
 
         <View style={styles.body}>
-          <Text style={[type.body, { color: colors.textMuted }]}>{book.synopsis[locale]}</Text>
+          {synopsis ? (
+            <Pressable onPress={() => setExpanded((e) => !e)}>
+              <Text style={[type.body, { color: colors.textMuted }]} numberOfLines={expanded ? undefined : 6}>
+                {synopsis}
+              </Text>
+              {synopsis.length > 320 && (
+                <Text style={styles.more}>{expanded ? t('book.readLess') : t('book.readMore')}</Text>
+              )}
+            </Pressable>
+          ) : null}
 
           {entry ? (
             <>
@@ -204,6 +235,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   save: { fontFamily: fonts.semibold, fontSize: 13, color: colors.gold },
+  more: { fontFamily: fonts.semibold, fontSize: 13, color: colors.gold, marginTop: 6 },
   remove: {
     flexDirection: 'row',
     alignItems: 'center',
