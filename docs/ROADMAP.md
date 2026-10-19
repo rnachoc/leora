@@ -2,8 +2,8 @@
 
 ## Phase 0 — Prototype & validation (Oct 2026)
 - [x] Product definition
-- [ ] Interactive prototype on sample data (Expo, runs on iOS/Android/web)
-- [ ] Waitlist landing page
+- [x] Interactive prototype on sample data (Expo, runs on iOS/Android/web)
+- [x] Waitlist landing page
 - [ ] Paid traffic test (Meta / TikTok) — target ≥15% landing → waitlist
 
 ## Phase 1 — MVP (Nov–Dec 2026)
