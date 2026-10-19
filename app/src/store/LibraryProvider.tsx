@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react';
-import { getBook, type Book } from '@/data/books';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from 'react';
+import { getBook, registerBooks, type Book } from '@/data/books';
 import {
   DEMO_LIBRARY,
   DEMO_PROFILE,
@@ -20,7 +21,15 @@ type Action =
   | { type: 'remove'; bookId: string }
   | { type: 'useRecommendation' }
   | { type: 'dismiss'; bookId: string; reason: DismissReason }
-  | { type: 'setPremium'; value: boolean };
+  | { type: 'setPremium'; value: boolean }
+  | { type: 'hydrate'; state: State }
+  | { type: 'reset' };
+
+const DEMO_STATE: State = { entries: DEMO_LIBRARY, profile: DEMO_PROFILE, dismissed: [] };
+
+/** Bump the version when the stored shape changes incompatibly. */
+const STORAGE_KEY = 'leora:library:v1';
+type Stored = State & { books: Book[] };
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -59,6 +68,10 @@ function reducer(state: State, action: Action): State {
       return { ...state, dismissed: [...state.dismissed, { bookId: action.bookId, reason: action.reason }] };
     case 'setPremium':
       return { ...state, profile: { ...state.profile, isPremium: action.value } };
+    case 'hydrate':
+      return action.state;
+    case 'reset':
+      return DEMO_STATE;
   }
 }
 
@@ -74,12 +87,48 @@ type LibraryValue = State & {
 
 const LibraryContext = createContext<LibraryValue | null>(null);
 
+/**
+ * Library state, persisted on the device (AsyncStorage → localStorage on web).
+ * First launch starts from the demo library; afterwards the reader's own data
+ * is restored. Production will sync the same state to Supabase.
+ */
 export function LibraryProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, {
-    entries: DEMO_LIBRARY,
-    profile: DEMO_PROFILE,
-    dismissed: [],
-  });
+  const [state, dispatch] = useReducer(reducer, DEMO_STATE);
+  const [hydrated, setHydrated] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Restore saved state once.
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved = JSON.parse(raw) as Stored;
+        registerBooks(saved.books ?? []);
+        dispatch({
+          type: 'hydrate',
+          state: {
+            entries: saved.entries,
+            profile: { ...DEMO_PROFILE, ...saved.profile },
+            dismissed: saved.dismissed ?? [],
+          },
+        });
+      })
+      .catch(() => {})
+      .finally(() => setHydrated(true));
+  }, []);
+
+  // Save after every change (debounced), including the live-catalog books the library references.
+  useEffect(() => {
+    if (!hydrated) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      const books = state.entries
+        .map((e) => getBook(e.bookId))
+        .filter((b): b is Book => Boolean(b && b.source && b.source !== 'sample'));
+      const stored: Stored = { ...state, books };
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(stored)).catch(() => {});
+    }, 300);
+  }, [state, hydrated]);
 
   const value = useMemo<LibraryValue>(() => {
     const items = state.entries
@@ -95,6 +144,9 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
       dispatch,
     };
   }, [state]);
+
+  // Avoid flashing the demo library before saved data is restored.
+  if (!hydrated) return null;
 
   return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
 }
