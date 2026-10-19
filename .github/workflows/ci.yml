@@ -7,7 +7,7 @@ on:
 
 jobs:
   app:
-    name: Type-check & web build
+    name: Type-check, lint, test & web build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,6 +26,12 @@ jobs:
 
       - name: Type-check
         run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint -- --max-warnings 0
+
+      - name: Unit tests
+        run: npm test -- --ci
 
       - name: Build web bundle
         run: npm run export:web
