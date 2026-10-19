@@ -15,6 +15,8 @@ Leora is a mobile app for readers who want a gorgeous personal library of everyt
 
 🇬🇧 English · 🇪🇸 Español
 
+**[▶ Try the live demo](https://rnachoc.github.io/leora/app/)** · [Landing page](https://rnachoc.github.io/leora/)
+
 </div>
 
 ---
@@ -67,6 +69,8 @@ npm run web          # Run in the browser
 npm run typecheck    # TypeScript strict check
 ```
 
+> Or just open the **[live web demo](https://rnachoc.github.io/leora/app/)** — it's deployed to GitHub Pages on every push to `main`.
+>
 > The current version is an **interactive prototype** running on sample data. Backend (Supabase), auth and the AI recommendation engine are next on the [roadmap](docs/ROADMAP.md).
 
 ## 🏗️ Tech stack
