@@ -32,9 +32,11 @@ type Props = { book: Book; width: number; style?: ViewStyle; shadow?: boolean };
  * loads, or if it fails) a cover generated from the book's colour.
  */
 export function BookCover({ book, width, style, shadow = true }: Props) {
-  const coverUrl = useCoverUrl(book);
-  const [failed, setFailed] = useState<string>();
-  const showImage = Boolean(coverUrl) && failed !== coverUrl;
+  const primary = useCoverUrl(book);
+  const [failed, setFailed] = useState<string[]>([]);
+  // Try the main cover, then the fallback (e.g. edition cover → work cover), then the generated one.
+  const coverUrl = [primary, book.coverFallbackUrl].find((u): u is string => Boolean(u) && !failed.includes(u!));
+  const showImage = Boolean(coverUrl);
   const height = Math.round(width * 1.5);
   const ink = inkFor(book.color);
   const variant = hashOf(book.id) % 3;
@@ -128,7 +130,7 @@ export function BookCover({ book, width, style, shadow = true }: Props) {
               contentFit="cover"
               transition={250}
               accessibilityLabel={book.title}
-              onError={() => setFailed(coverUrl)}
+              onError={() => coverUrl && setFailed((f) => [...f, coverUrl])}
             />
             <View
               style={[styles.hinge, { width: Math.max(2, 4 * scale), backgroundColor: withAlpha('#000000', 0.22) }]}
