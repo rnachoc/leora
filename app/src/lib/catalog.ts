@@ -1,5 +1,6 @@
 import type { Book } from '@/data/books';
 import type { GenreId, MoodId } from '@/data/taxonomy';
+import { norm } from './text';
 
 /**
  * Live book catalog.
@@ -34,8 +35,6 @@ function colorFor(id: string) {
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
   return PALETTE[Math.abs(h) % PALETTE.length];
 }
-
-const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 const GENRE_KEYWORDS: [GenreId, string[]][] = [
   ['thriller', ['thriller', 'suspense', 'suspenso']],
