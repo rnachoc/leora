@@ -26,7 +26,7 @@ Readers who finish 1–4 books a month, are active on BookTok/Bookstagram, and w
 | Method | v1 | Notes |
 |---|---|---|
 | Search by title/author | ✅ | Google Books + Open Library |
-| ISBN barcode scan | ✅ | expo-camera barcode scanner |
+| ISBN barcode scan | ✅ live | expo-camera; validates the ISBN and shows that edition's cover; manual ISBN entry as fallback |
 | Shelf photo (AI) | ✅ | Vision model reads spines → user confirms matches |
 | Goodreads import | ❌ | Later |
 

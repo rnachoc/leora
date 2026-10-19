@@ -30,6 +30,12 @@ Store links are generated server-side from the ISBN, so they can never be halluc
 - **Synopses** are fetched lazily from the work record the first time a book is opened.
 - **Covers**: catalog books carry their cover URL. Books without one (the bundled sample library) are resolved by title + author — exact title first (series/subtitles ignored), then a broad search restricted to the same author — preferring Spanish editions, then English, never other languages. Every lookup is cached on the device. The generated colour cover is always rendered underneath, so loading, missing or broken images never leave an empty box.
 
+### Barcode scanning (implemented)
+- `expo-camera` (included in Expo Go; iOS, Android and web) reads EAN-13 / EAN-8 / UPC-A.
+- Codes are validated client-side: an ISBN-13 must start with 978/979 and pass the check digit; ISBN-10 (incl. `X`) is converted. Other barcodes are ignored with a one-time hint, and duplicate scan events are guarded.
+- The edition is looked up with `search.json?isbn=` and shown with the cover of that exact edition (`covers.openlibrary.org/b/isbn/…`), falling back to the work cover and then to the generated cover.
+- Devices without a camera (or with permission denied) can type the ISBN.
+
 ### On-device persistence (implemented)
 The library, profile, quota and recommendation feedback are stored with AsyncStorage (localStorage on web) together with the live-catalog books they reference, and restored on launch. Supabase sync will replace this as the source of truth once accounts exist.
 
