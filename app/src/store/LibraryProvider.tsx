@@ -69,6 +69,8 @@ function reducer(state: State, action: Action): State {
           if (e.bookId !== action.bookId) return e;
           const next = { ...e, ...action.patch };
           if (action.patch.status === 'read' && !next.readAt) next.readAt = today();
+          // Starting a book again (or for the first time) begins its progress at 0.
+          if (action.patch.status === 'reading' && next.progress == null) next.progress = 0;
           return next;
         }),
       };
