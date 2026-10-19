@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native builds
+ios/
+android/
+*.apk
+*.aab
+*.ipa
+
+# Env
+.env
+.env*.local
+
+# OS / editors
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo

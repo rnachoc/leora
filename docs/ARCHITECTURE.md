@@ -1,0 +1,62 @@
+# Architecture
+
+## Overview
+
+```
+┌──────────────────────┐        ┌───────────────────────────────┐
+│  Mobile app (Expo)   │  HTTPS │           Supabase            │
+│  iOS · Android · Web │◀──────▶│  Auth · Postgres (RLS) · Storage │
+└──────────┬───────────┘        │  Edge Functions               │
+           │                    └───────┬───────────────┬───────┘
+           │ deep links                 │               │
+           ▼                            ▼               ▼
+   Public profile (web)        Catalog APIs        LLM provider
+                               Google Books ·      (ranking +
+                               Open Library        explanations)
+```
+
+## Key decisions
+
+### The AI never invents books
+Recommendation is a two-step pipeline running in an Edge Function:
+
+1. **Candidate retrieval** — query the catalog (Google Books / Open Library) by genre, mood keywords and authors/subjects from the user's top-rated books. Exclude anything already in the library.
+2. **LLM ranking** — the model receives the user's library (titles, ratings, reviews) plus the candidate list and returns the 3 best IDs with a one-line explanation each. Output is validated against the candidate set; anything else is discarded.
+
+Store links are generated server-side from the ISBN, so they can never be hallucinated.
+
+### Shelf-photo recognition
+Vision model extracts `(title, author)` pairs from spines → each is matched against the catalog → the user confirms in a checklist before anything is saved.
+
+### Data model (initial)
+
+| Table | Purpose |
+|---|---|
+| `profiles` | user id, username, display name, avatar, locale, yearly goal, is_public |
+| `books` | catalog cache: id, isbn13, title, authors, cover_url, page_count, genres, language |
+| `library_entries` | user_id, book_id, status, rating, review, read_at |
+| `recommendations` | user_id, request (genre/mood/seed), book_ids, created_at |
+| `recommendation_feedback` | recommendation_id, book_id, reason |
+| `badges` / `user_badges` | achievements |
+
+All user tables protected with row-level security (`auth.uid() = user_id`); public profiles exposed through a read-only view.
+
+### Monetization
+- Subscriptions via **RevenueCat** (wraps App Store / Google Play billing).
+- Free-tier quota enforced server-side in the recommendation function.
+
+## App structure (`app/`)
+
+```
+app/
+├── app/                # expo-router routes
+│   ├── (tabs)/         # Library · Discover · Profile
+│   ├── book/[id].tsx   # Book detail
+│   └── add.tsx         # Add book (modal)
+└── src/
+    ├── components/     # UI building blocks
+    ├── data/           # Sample data (prototype)
+    ├── i18n/           # ES / EN strings
+    ├── store/          # App state
+    └── theme/          # Design tokens
+```
