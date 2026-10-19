@@ -193,8 +193,20 @@ export async function searchBooks(query: string, signal?: AbortSignal): Promise<
     );
     return (data.items ?? []).map(fromGoogleBooks);
   }
-  const data = await getJson<{ docs: OLDoc[] }>(`${OL}/search.json?q=${q}&fields=${OL_FIELDS}&limit=20`, signal);
-  return data.docs.filter((d) => d.title).map(fromOpenLibrary);
+  // Ask for more than we show: Open Library often has several work records for one book.
+  const data = await getJson<{ docs: OLDoc[] }>(`${OL}/search.json?q=${q}&fields=${OL_FIELDS}&limit=40`, signal);
+  return dedupe(data.docs.filter((d) => d.title).map(fromOpenLibrary)).slice(0, 20);
+}
+
+/** One result per book: same base title + first author, keeping the first (most relevant) that has a cover. */
+function dedupe(books: Book[]): Book[] {
+  const byKey = new Map<string, Book>();
+  for (const b of books) {
+    const key = `${baseTitle(b.title)}|${norm(b.author.split(',')[0])}`;
+    const prev = byKey.get(key);
+    if (!prev || (!prev.coverUrl && b.coverUrl)) byKey.set(key, b);
+  }
+  return [...byKey.values()];
 }
 
 /** Description for a catalog book (Open Library keeps it on the work record). */
