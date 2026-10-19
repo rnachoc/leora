@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacidad y cookies · Leora</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0E0C0A" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .legal {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 40px 16px 72px;
+      }
+      .legal h1 {
+        font-size: clamp(32px, 7vw, 44px);
+        margin-bottom: 8px;
+      }
+      .legal h2 {
+        font-size: 22px;
+        margin: 32px 0 10px;
+      }
+      .legal p,
+      .legal li {
+        color: var(--muted);
+      }
+      .legal ul {
+        padding-left: 20px;
+        display: grid;
+        gap: 6px;
+      }
+      .legal .pending {
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: var(--gold-dim);
+        color: var(--gold-bright);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <a href="./" class="brand">Leora</a>
+      <a href="./#waitlist" class="nav-cta">Únete a la lista</a>
+    </header>
+
+    <main class="legal">
+      <h1>Privacidad y cookies</h1>
+      <p>Última actualización: octubre de 2026.</p>
+
+      <h2>Responsable</h2>
+      <!-- TODO before running ads: legal name, NIF/DNI, postal address and contact e-mail of the controller. -->
+      <p class="pending">Datos del responsable del tratamiento pendientes de completar antes del lanzamiento.</p>
+
+      <h2>Qué datos recogemos</h2>
+      <ul>
+        <li>
+          <strong>Lista de espera:</strong> tu email y, si la indicas, cuánto lees. Además guardamos el idioma del
+          navegador y el anuncio o enlace por el que llegaste (parámetros <code>utm</code>).
+        </li>
+        <li>
+          <strong>Cookies de medición (solo si aceptas):</strong> el píxel de Meta, para saber qué anuncios generan
+          registros.
+        </li>
+      </ul>
+
+      <h2>Para qué los usamos</h2>
+      <ul>
+        <li>Avisarte cuando Leora esté disponible. No enviamos publicidad de terceros ni vendemos tus datos.</li>
+        <li>Medir y mejorar nuestras campañas de anuncios, si has aceptado las cookies.</li>
+      </ul>
+
+      <h2>Base legal y conservación</h2>
+      <p>
+        Tratamos tus datos con tu consentimiento, que puedes retirar cuando quieras. Conservamos tu email hasta el
+        lanzamiento de la app o hasta que pidas que lo borremos.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        Esta web no usa cookies propias de seguimiento. Si aceptas, se carga el píxel de Meta (Meta Platforms Ireland
+        Ltd.). Si las rechazas, no se carga nada. Puedes cambiar tu elección en
+        <a href="#" data-consent-open>preferencias de cookies</a>.
+      </p>
+
+      <h2>Tus derechos</h2>
+      <p>
+        Puedes acceder a tus datos, rectificarlos, suprimirlos, oponerte o pedir su portabilidad escribiendo al
+        contacto del responsable. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).
+      </p>
+    </main>
+
+    <footer class="footer">
+      <p><a href="./">Volver a Leora</a></p>
+    </footer>
+    <script src="consent.js" defer></script>
+  </body>
+</html>
