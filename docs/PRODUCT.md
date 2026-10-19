@@ -10,6 +10,13 @@ Readers who finish 1–4 books a month, are active on BookTok/Bookstagram, and w
 
 ## Core flows
 
+### 0. Onboarding (first launch → after sign-up once accounts exist)
+- **Welcome**: create my library, or explore a sample library (for visitors from ads/landing).
+- **Questionnaire** (6 short steps): name · reading pace (suggests a yearly goal: 12 / 30 / 60) · favourite genres · moods · 3–5 books they loved · yearly goal.
+- Favourite books are added as 5★ reads and stated genres/moods act as a recommendation prior, so recommendations are relevant from minute one (solves the cold start).
+- **App guide**: four swipeable cards (library, adding books, discover, your year), replayable from the profile.
+- While the library has fewer than 5 books, a starter card nudges to add more (search or shelf photo).
+
 ### 1. Library
 - Two views, switchable with one tap: **bookshelf** (spines on wooden shelves) and **cover grid**.
 - Filter by status: read · reading · want to read · did not finish.
