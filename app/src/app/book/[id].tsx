@@ -1,0 +1,208 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BookCover } from '@/components/BookCover';
+import { Icon } from '@/components/Icon';
+import { Stars } from '@/components/Stars';
+import { Button, Card, IconButton, Screen, SectionTitle, Segmented, tap } from '@/components/ui';
+import { getBook } from '@/data/books';
+import { STATUSES, type ReadingStatus } from '@/data/library';
+import { genreLabel } from '@/data/taxonomy';
+import { useI18n } from '@/i18n/I18nProvider';
+import { useLibrary } from '@/store/LibraryProvider';
+import { colors, fonts, radius, space, type, withAlpha } from '@/theme/tokens';
+
+export default function BookScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { t, locale, formatDate } = useI18n();
+  const { entryFor, dispatch } = useLibrary();
+  const book = getBook(id ?? '');
+  const entry = book ? entryFor(book.id) : undefined;
+
+  const [review, setReview] = useState(entry?.review ?? '');
+  const [saved, setSaved] = useState(false);
+  useEffect(() => setReview(entry?.review ?? ''), [entry?.review]);
+
+  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/'));
+
+  if (!book) return null;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <LinearGradient
+        colors={[withAlpha(book.color, 0.55), withAlpha(book.color, 0.12), colors.bg]}
+        locations={[0, 0.35, 0.7]}
+        style={styles.backdrop}
+        pointerEvents="none"
+      />
+      <IconButton
+        icon="chevronLeft"
+        label={t('common.back')}
+        onPress={goBack}
+        style={[styles.back, { top: insets.top + 8 }]}
+      />
+
+      <Screen tabBar={false} contentStyle={{ paddingTop: insets.top + 64 }}>
+        <View style={styles.hero}>
+          <View style={[styles.coverGlow, { shadowColor: book.color }]}>
+            <BookCover book={book} width={176} />
+          </View>
+          <Text style={[type.title, styles.center, { marginTop: space.xl }]}>{book.title}</Text>
+          <Text style={[type.body, styles.center, { color: colors.textMuted, marginTop: 4 }]}>{book.author}</Text>
+          <Text style={[type.small, styles.center, { marginTop: 8 }]}>
+            {book.year} · {t('book.pages', { pages: book.pages })}
+          </Text>
+          <View style={styles.tags}>
+            {book.genres.map((g) => (
+              <View key={g} style={styles.tag}>
+                <Text style={styles.tagText}>{genreLabel(g, locale)}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.body}>
+          <Text style={[type.body, { color: colors.textMuted }]}>{book.synopsis[locale]}</Text>
+
+          {entry ? (
+            <>
+              <Card style={{ gap: space.lg }}>
+                <View>
+                  <SectionTitle>{t('book.status')}</SectionTitle>
+                  <Segmented<ReadingStatus>
+                    value={entry.status}
+                    onChange={(status) => dispatch({ type: 'update', bookId: book.id, patch: { status } })}
+                    options={STATUSES.map((s) => ({ value: s, label: t(`status.${s}`) }))}
+                  />
+                </View>
+
+                {entry.status !== 'want' && (
+                  <View>
+                    <SectionTitle>{t('book.yourRating')}</SectionTitle>
+                    <Stars
+                      value={entry.rating}
+                      size={34}
+                      gap={8}
+                      onChange={(rating) => dispatch({ type: 'update', bookId: book.id, patch: { rating } })}
+                    />
+                    {entry.readAt && entry.status === 'read' && (
+                      <Text style={[type.small, { marginTop: 10 }]}>
+                        {t('book.readOn', { date: formatDate(entry.readAt) })}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </Card>
+
+              <Card>
+                <SectionTitle
+                  right={
+                    review !== (entry.review ?? '') || saved ? (
+                      <Pressable
+                        onPress={() => {
+                          tap('success');
+                          dispatch({ type: 'update', bookId: book.id, patch: { review: review.trim() } });
+                          setSaved(true);
+                          setTimeout(() => setSaved(false), 1600);
+                        }}
+                      >
+                        <Text style={styles.save}>{saved ? `✓ ${t('book.saved')}` : t('book.save')}</Text>
+                      </Pressable>
+                    ) : null
+                  }
+                >
+                  {t('book.review')}
+                </SectionTitle>
+                <TextInput
+                  value={review}
+                  onChangeText={setReview}
+                  placeholder={t('book.reviewPlaceholder')}
+                  placeholderTextColor={colors.textFaint}
+                  multiline
+                  style={styles.review}
+                />
+              </Card>
+            </>
+          ) : (
+            <View style={{ flexDirection: 'row', gap: space.md }}>
+              <Button
+                label={t('status.read')}
+                icon="check"
+                style={{ flex: 1 }}
+                onPress={() => dispatch({ type: 'add', bookId: book.id, status: 'read' })}
+              />
+              <Button
+                label={t('status.want')}
+                icon="bookmark"
+                variant="secondary"
+                style={{ flex: 1 }}
+                onPress={() => dispatch({ type: 'add', bookId: book.id, status: 'want' })}
+              />
+            </View>
+          )}
+
+          <Button
+            label={t('book.moreLikeThis')}
+            icon="sparkles"
+            variant="secondary"
+            onPress={() => router.push({ pathname: '/discover', params: { seed: book.id } })}
+          />
+
+          {entry && (
+            <Pressable
+              onPress={() => {
+                dispatch({ type: 'remove', bookId: book.id });
+                goBack();
+              }}
+              style={styles.remove}
+            >
+              <Icon name="trash" size={16} color={colors.danger} />
+              <Text style={[type.small, { color: colors.danger }]}>{t('book.remove')}</Text>
+            </Pressable>
+          )}
+        </View>
+      </Screen>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  backdrop: { position: 'absolute', top: 0, left: 0, right: 0, height: 560 },
+  back: { position: 'absolute', left: space.lg, zIndex: 10 },
+  hero: { alignItems: 'center', paddingHorizontal: space.xl },
+  coverGlow: {
+    shadowOpacity: 0.7,
+    shadowRadius: 40,
+    shadowOffset: { width: 0, height: 20 },
+  },
+  center: { textAlign: 'center' },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginTop: space.md },
+  tag: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radius.pill,
+    backgroundColor: colors.goldDim,
+  },
+  tagText: { fontFamily: fonts.medium, fontSize: 12, color: colors.goldBright },
+  body: { paddingHorizontal: space.xl, marginTop: space.xl, gap: space.lg },
+  review: {
+    minHeight: 90,
+    fontFamily: fonts.body,
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.text,
+    textAlignVertical: 'top',
+  },
+  save: { fontFamily: fonts.semibold, fontSize: 13, color: colors.gold },
+  remove: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: space.md,
+  },
+});
