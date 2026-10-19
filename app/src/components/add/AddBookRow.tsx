@@ -36,7 +36,7 @@ export function AddBookRow({ book, initiallyOpen = false }: { book: Book; initia
             {book.title}
           </Text>
           <Text style={type.small} numberOfLines={1}>
-            {book.author} · {book.year}
+            {book.year > 0 ? `${book.author} · ${book.year}` : book.author}
           </Text>
         </View>
         {inLibrary ? (
