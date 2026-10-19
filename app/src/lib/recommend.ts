@@ -154,15 +154,3 @@ export function recommend(req: RecommendRequest, ctx: Ctx, count = 3): Recommend
     return lines.slice(0, 2).join(' ');
   }
 }
-
-/** Store search links. Production generates these server-side from the ISBN with affiliate tags. */
-export function storeLinks(book: Book) {
-  const q = encodeURIComponent(`${book.title} ${book.author}`);
-  return [
-    { id: 'amazon', label: 'Amazon', url: `https://www.amazon.es/s?k=${q}&i=stripbooks` },
-    { id: 'casadellibro', label: 'Casa del Libro', url: `https://www.casadellibro.com/busqueda-generica?busqueda=${q}` },
-    { id: 'fnac', label: 'Fnac', url: `https://www.fnac.es/SearchResult/ResultList.aspx?Search=${q}` },
-    { id: 'kobo', label: 'Kobo', url: `https://www.kobo.com/es/es/search?query=${q}` },
-    { id: 'audible', label: 'Audible', url: `https://www.audible.es/search?keywords=${q}` },
-  ];
-}

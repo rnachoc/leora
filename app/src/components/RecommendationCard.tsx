@@ -6,7 +6,8 @@ import { Icon } from './Icon';
 import { Button, Chip, tap } from './ui';
 import { genreLabel } from '@/data/taxonomy';
 import { useI18n } from '@/i18n/I18nProvider';
-import { storeLinks, type Recommendation } from '@/lib/recommend';
+import type { Recommendation } from '@/lib/recommend';
+import { storeLinks } from '@/lib/stores';
 import { useLibrary, type DismissReason } from '@/store/LibraryProvider';
 import { colors, fonts, radius, space, type, withAlpha } from '@/theme/tokens';
 
