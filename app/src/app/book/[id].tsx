@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookCover } from '@/components/BookCover';
 import { ProgressControl } from '@/components/ProgressControl';
+import { StoreButtons } from '@/components/StoreButtons';
 import { Icon } from '@/components/Icon';
 import { Stars } from '@/components/Stars';
 import { Button, Card, Chip, IconButton, Screen, SectionTitle, tap } from '@/components/ui';
@@ -219,6 +220,8 @@ export default function BookScreen() {
               />
             </View>
           )}
+
+          {(!entry || entry.status === 'want') && <StoreButtons book={book} />}
 
           <Button
             label={t('book.moreLikeThis')}
