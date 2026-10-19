@@ -58,7 +58,13 @@ export default function DiscoverScreen() {
     }
     dispatch({ type: 'useRecommendation' });
     setPhase('thinking');
-    const picks = recommend(request, { entries, dismissed, locale, t });
+    const picks = recommend(request, {
+      entries,
+      dismissed,
+      locale,
+      t,
+      preferences: { genres: profile.favoriteGenres, moods: profile.favoriteMoods },
+    });
     setTimeout(() => {
       tap('success');
       setResults(picks);

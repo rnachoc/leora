@@ -23,6 +23,8 @@ export type Recommendation = { book: Book; why: string; score: number };
 
 type Ctx = {
   entries: LibraryEntry[];
+  /** Tastes stated in onboarding: a prior that matters most while there are few ratings. */
+  preferences?: { genres: GenreId[]; moods: MoodId[] };
   dismissed: Dismissal[];
   locale: 'es' | 'en';
   t: (key: StringKey, vars?: Record<string, string | number>) => string;
@@ -35,7 +37,7 @@ type Taste = {
   rated: { book: Book; rating: number }[];
 };
 
-function tasteOf(entries: LibraryEntry[]): Taste {
+function tasteOf(entries: LibraryEntry[], preferences?: Ctx['preferences']): Taste {
   const taste: Taste = { genres: new Map(), moods: new Map(), authors: new Map(), rated: [] };
   const bump = <K,>(m: Map<K, number>, k: K, v: number) => m.set(k, (m.get(k) ?? 0) + v);
   for (const e of entries) {
@@ -51,6 +53,9 @@ function tasteOf(entries: LibraryEntry[]): Taste {
     book.moods.forEach((m) => bump(taste.moods, m, w));
     bump(taste.authors, book.author, w);
   }
+  // Stated preferences count like ~one loved book each, so ratings take over as the library grows.
+  preferences?.genres.forEach((g) => bump(taste.genres, g, 1.5));
+  preferences?.moods.forEach((m) => bump(taste.moods, m, 1.5));
   taste.rated.sort((a, b) => b.rating - a.rating);
   return taste;
 }
@@ -66,7 +71,7 @@ function joinList(items: string[], and: string) {
 
 export function recommend(req: RecommendRequest, ctx: Ctx, count = 3): Recommendation[] {
   const { entries, dismissed, locale, t } = ctx;
-  const taste = tasteOf(entries);
+  const taste = tasteOf(entries, ctx.preferences);
   const owned = new Set(entries.map((e) => e.bookId));
   const dismissedIds = new Set(dismissed.map((d) => d.bookId));
   const avoidAuthors = new Set(
