@@ -13,6 +13,10 @@ export type Book = {
   synopsis: Localized;
   /** Real cover image (catalog). When missing or broken, a cover is generated from `color`. */
   coverUrl?: string;
+  /** Tried when coverUrl fails to load (e.g. an edition without its own cover). */
+  coverFallbackUrl?: string;
+  /** ISBN-13 when known (scanned or looked up). */
+  isbn?: string;
   /** Where the record comes from: the bundled sample catalog or a live catalog API. */
   source?: 'sample' | 'openlibrary' | 'googlebooks';
 };
