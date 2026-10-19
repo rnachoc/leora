@@ -227,14 +227,42 @@ async function limited<T>(task: () => Promise<T>): Promise<T> {
   }
 }
 
-/** Finds a real cover for a title + author, or undefined. */
+type CoverDoc = { title: string; author_name?: string[]; cover_i?: number };
+
+const coverUrl = (id: number) => `${OL_COVERS}/${id}-M.jpg`;
+
+/** "La sombra del viento" matches "La sombra del viento" or "La sombra del viento: novela", not a sequel or spin-off. */
+function sameTitle(a: string, b: string) {
+  const x = norm(a)
+    .replace(/[^\p{L}\p{N} ]/gu, '')
+    .trim();
+  const y = norm(b)
+    .replace(/[^\p{L}\p{N} ]/gu, '')
+    .trim();
+  return x === y || norm(a).startsWith(norm(b) + ':') || norm(b).startsWith(norm(a) + ':');
+}
+
+/**
+ * Finds a real cover for a title + author, or undefined.
+ * 1. Title + author search, accepting only an exact title match (avoids
+ *    picking "Hábitos atómicos en acción" for "Hábitos atómicos").
+ * 2. Broad search, accepting the top work by the same author — this finds
+ *    Spanish titles indexed under the original work (e.g. "Proyecto Hail Mary").
+ */
 export function findCover(title: string, author: string): Promise<string | undefined> {
+  const mainAuthor = author.split(/,| y | and /)[0].trim();
+  const surname = norm(mainAuthor.split(' ').pop() ?? mainAuthor);
   return limited(async () => {
-    const url = `${OL}/search.json?title=${encodeURIComponent(title)}&author=${encodeURIComponent(
-      author.split(/,| y | and /)[0],
-    )}&fields=cover_i&limit=5`;
-    const data = await getJson<{ docs: { cover_i?: number }[] }>(url);
-    const hit = data.docs.find((d) => d.cover_i);
-    return hit ? `${OL_COVERS}/${hit.cover_i}-M.jpg` : undefined;
+    const byTitle = await getJson<{ docs: CoverDoc[] }>(
+      `${OL}/search.json?title=${encodeURIComponent(title)}&author=${encodeURIComponent(mainAuthor)}&fields=title,cover_i&limit=10`,
+    );
+    const exact = byTitle.docs.find((d) => d.cover_i && sameTitle(d.title, title));
+    if (exact?.cover_i) return coverUrl(exact.cover_i);
+
+    const broad = await getJson<{ docs: CoverDoc[] }>(
+      `${OL}/search.json?q=${encodeURIComponent(`${title} ${mainAuthor}`)}&fields=title,author_name,cover_i&limit=5`,
+    );
+    const top = broad.docs.find((d) => d.cover_i && d.author_name?.some((a) => norm(a).includes(surname)));
+    return top?.cover_i ? coverUrl(top.cover_i) : undefined;
   });
 }
