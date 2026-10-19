@@ -33,8 +33,9 @@ jobs:
         run: |
           npm ci
           npx expo export --platform web --output-dir ../site/app
-          # GitHub Pages serves 404.html for unknown paths → deep links work in the SPA.
-          cp ../site/app/index.html ../site/app/404.html
+          # GitHub Pages only honours 404.html at the site root: serve the app shell
+          # for unknown paths so deep links like /leora/app/book/<id> work.
+          cp ../site/app/index.html ../site/404.html
 
       - name: Add landing page at the site root
         run: cp -r landing/. site/
