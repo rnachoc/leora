@@ -293,3 +293,41 @@ export function findCover(title: string, author: string): Promise<string | undef
     return top?.cover_i ? coverUrl(top.cover_i) : undefined;
   });
 }
+
+// ——— ISBN ———
+
+/**
+ * Normalises a scanned or typed code to an ISBN-13, or undefined if it isn't a
+ * valid book code. Accepts EAN-13 starting with 978/979 and ISBN-10 (incl. "X").
+ */
+export function toIsbn13(raw: string): string | undefined {
+  const code = raw.replace(/[^0-9Xx]/g, '').toUpperCase();
+  if (code.length === 13 && /^97[89]\d{10}$/.test(code)) {
+    const sum = [...code.slice(0, 12)].reduce((s, d, i) => s + Number(d) * (i % 2 ? 3 : 1), 0);
+    return (10 - (sum % 10)) % 10 === Number(code[12]) ? code : undefined;
+  }
+  if (code.length === 10 && /^\d{9}[\dX]$/.test(code)) {
+    const sum = [...code].reduce((s, c, i) => s + (c === 'X' ? 10 : Number(c)) * (10 - i), 0);
+    if (sum % 11 !== 0) return undefined;
+    const body = '978' + code.slice(0, 9);
+    const check = (10 - ([...body].reduce((s, d, i) => s + Number(d) * (i % 2 ? 3 : 1), 0) % 10)) % 10;
+    return body + check;
+  }
+  return undefined;
+}
+
+/**
+ * Looks a book up by ISBN. The cover is the one of that exact edition (so a
+ * Spanish paperback shows its Spanish cover), falling back to the work cover.
+ */
+export async function lookupIsbn(isbn13: string, signal?: AbortSignal): Promise<Book | undefined> {
+  const data = await getJson<{ docs: OLDoc[] }>(`${OL}/search.json?isbn=${isbn13}&fields=${OL_FIELDS}&limit=1`, signal);
+  const doc = data.docs[0];
+  if (!doc) return undefined;
+  const book = fromOpenLibrary(doc);
+  const editionCover = `https://covers.openlibrary.org/b/isbn/${isbn13}-M.jpg?default=false`;
+  if (book.coverUrl) book.coverFallbackUrl = book.coverUrl;
+  book.coverUrl = editionCover;
+  book.isbn = isbn13;
+  return book;
+}
