@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,7 +15,8 @@ export default function AddBookScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useI18n();
-  const [tab, setTab] = useState<Tab>('search');
+  const params = useLocalSearchParams<{ tab?: Tab }>();
+  const [tab, setTab] = useState<Tab>(params.tab ?? 'search');
 
   return (
     <Screen tabBar={false} keyboardShouldPersistTaps="handled" contentStyle={{ paddingTop: insets.top + space.md }}>
