@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BookCover } from '@/components/BookCover';
 import { Icon } from '@/components/Icon';
@@ -22,21 +22,24 @@ export default function DiscoverScreen() {
   const { t, locale } = useI18n();
   const { items, entries, dismissed, profile, recommendationsLeft, canRecommend, dispatch } = useLibrary();
 
-  const [mode, setMode] = useState<Mode>('genre');
+  const [mode, setMode] = useState<Mode>(seed ? 'like' : 'genre');
   const [genre, setGenre] = useState<GenreId>();
   const [mood, setMood] = useState<MoodId>();
-  const [likeId, setLikeId] = useState<string>();
+  const [likeId, setLikeId] = useState<string | undefined>(seed);
   const [phase, setPhase] = useState<Phase>('pick');
   const [results, setResults] = useState<Recommendation[]>([]);
 
-  // Arriving from a book's "recommend something similar" button.
-  useEffect(() => {
+  // Arriving (again) from a book's "recommend something similar" button: adjust
+  // state while rendering when the seed changes, instead of in an effect.
+  const [lastSeed, setLastSeed] = useState(seed);
+  if (seed !== lastSeed) {
+    setLastSeed(seed);
     if (seed) {
       setMode('like');
       setLikeId(seed);
       setPhase('pick');
     }
-  }, [seed]);
+  }
 
   const favourites = items.filter((i) => i.entry.status === 'read' && (i.entry.rating ?? 0) >= 4);
   const readCount = items.filter((i) => i.entry.status === 'read').length;
