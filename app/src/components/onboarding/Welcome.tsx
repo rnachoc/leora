@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookCover } from '../BookCover';
@@ -17,8 +17,8 @@ const FAN = ['circe', 'sombra-viento', 'hail-mary', 'reina-roja', 'evelyn-hugo']
 export function Welcome({ onStart, onDemo }: { onStart: () => void; onDemo: () => void }) {
   const insets = useSafeAreaInsets();
   const { t, locale, setLocale } = useI18n();
-  const float = useRef(new Animated.Value(0)).current;
-  const appear = useRef(new Animated.Value(0)).current;
+  const [float] = useState(() => new Animated.Value(0));
+  const [appear] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.timing(appear, {

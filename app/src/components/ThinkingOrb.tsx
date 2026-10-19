@@ -1,12 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import { colors, type } from '@/theme/tokens';
 
 /** Pulsing gold orb with rotating status lines, shown while picks are being computed. */
 export function ThinkingOrb({ messages }: { messages: string[] }) {
-  const pulse = useRef(new Animated.Value(0)).current;
-  const spin = useRef(new Animated.Value(0)).current;
+  const [pulse] = useState(() => new Animated.Value(0));
+  const [spin] = useState(() => new Animated.Value(0));
   const [i, setI] = useState(0);
 
   useEffect(() => {

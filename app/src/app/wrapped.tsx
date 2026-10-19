@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Platform, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookCover } from '@/components/BookCover';
@@ -28,7 +28,7 @@ export default function WrappedScreen() {
   const { items } = useLibrary();
   const stats = readingStats(items);
   const [slide, setSlide] = useState(0);
-  const fade = useRef(new Animated.Value(0)).current;
+  const [fade] = useState(() => new Animated.Value(0));
 
   const total = BACKGROUNDS.length;
   const close = () => (router.canGoBack() ? router.back() : router.replace('/profile'));

@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, IconButton } from '../ui';
@@ -22,7 +22,7 @@ type Props = {
 export function StepShell({ step, total, title, subtitle, cta, ctaDisabled, onNext, onBack, children }: Props) {
   const insets = useSafeAreaInsets();
   const { t } = useI18n();
-  const enter = useRef(new Animated.Value(0)).current;
+  const [enter] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     enter.setValue(0);

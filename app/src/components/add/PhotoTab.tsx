@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { hashOf, inkFor } from '../BookCover';
 import { Icon } from '../Icon';
@@ -22,7 +22,7 @@ export function PhotoTab() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [books, setBooks] = useState<Book[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const sweep = useRef(new Animated.Value(0)).current;
+  const [sweep] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     if (phase !== 'analyzing') return;

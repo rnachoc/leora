@@ -34,7 +34,7 @@ export function ScanTab() {
   const [manual, setManual] = useState('');
   const busy = useRef(false);
   const lastRejected = useRef<string | undefined>(undefined);
-  const line = useRef(new Animated.Value(0)).current;
+  const [line] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const loop = Animated.loop(
