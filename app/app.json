@@ -28,7 +28,14 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-image"
+      "expo-image",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Leora usa la cámara para escanear el código de barras de tus libros y añadirlos a tu biblioteca.",
+          "recordAudioAndroid": false
+        }
+      ]
     ],
     "scheme": "leora",
     "backgroundColor": "#0E0C0A",
