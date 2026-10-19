@@ -75,3 +75,13 @@ export function genreLabel(id: GenreId, locale: 'es' | 'en') {
 export function moodLabel(id: MoodId, locale: 'es' | 'en') {
   return MOODS.find((m) => m.id === id)?.label[locale] ?? id;
 }
+
+/** How a mood reads as a shared trait: "the same {trait}". */
+export const MOOD_TRAITS: Record<MoodId, Localized> = {
+  unputdownable: { es: 'ritmo trepidante', en: 'page-turning pace' },
+  heartbreak: { es: 'carga emocional', en: 'emotional punch' },
+  light: { es: 'tono ligero', en: 'light touch' },
+  escape: { es: 'mundo en el que perderse', en: 'immersive world' },
+  learn: { es: 'ideas que se quedan', en: 'ideas that stick' },
+  dark: { es: 'atmósfera oscura', en: 'dark atmosphere' },
+};

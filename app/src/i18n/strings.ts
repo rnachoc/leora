@@ -81,12 +81,12 @@ const es = {
   'discover.quota': '{left} de {total} recomendaciones gratis este mes',
   'discover.unlimited': 'Recomendaciones ilimitadas',
 
-  'why.likeSeed': 'Te encantó «{seed}» y comparte con él {shared}.',
+  'why.likeSeed': 'Si te encantó «{seed}», aquí encontrarás lo mismo: {shared}.',
   'why.author': 'Es de {author}, a quien ya le diste {stars}★ con «{seed}».',
-  'why.genre': 'Tus mejores notas en {genre} son para libros como «{seed}».',
+  'why.taste': 'Diste {stars}★ a «{seed}» y este comparte su {trait}.',
   'why.mood': 'Encaja con lo que buscas: {mood}.',
-  'why.pace': 'Por su ritmo, se parece a «{seed}», que puntuaste con {stars}★.',
   'why.and': ' y ',
+  'why.fallback': 'Muy bien valorado por lectores con gustos parecidos a los tuyos.',
 
   'profile.title': 'Perfil',
   'profile.goal': 'Reto {year}',
@@ -247,12 +247,12 @@ const en: Record<StringKey, string> = {
   'discover.quota': '{left} of {total} free recommendations left this month',
   'discover.unlimited': 'Unlimited recommendations',
 
-  'why.likeSeed': 'You loved “{seed}” and this shares its {shared}.',
+  'why.likeSeed': 'If you loved “{seed}”, you’ll find the same here: {shared}.',
   'why.author': 'It’s by {author}, whom you gave {stars}★ for “{seed}”.',
-  'why.genre': 'Your top {genre} ratings go to books like “{seed}”.',
+  'why.taste': 'You gave “{seed}” {stars}★, and this shares its {trait}.',
   'why.mood': 'It fits what you’re after: {mood}.',
-  'why.pace': 'Its pace is close to “{seed}”, which you rated {stars}★.',
   'why.and': ' and ',
+  'why.fallback': 'Highly rated by readers whose taste is close to yours.',
 
   'profile.title': 'Profile',
   'profile.goal': '{year} challenge',
