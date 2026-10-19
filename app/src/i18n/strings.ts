@@ -108,6 +108,10 @@ const es = {
   'profile.premium': 'Leora Premium',
   'profile.premiumCta': 'Hazte Premium',
   'profile.premiumActive': 'Premium activo',
+  'profile.data': 'Datos',
+  'profile.reset': 'Restablecer biblioteca de demo',
+  'profile.resetHint': 'Borra tus cambios guardados en este dispositivo y vuelve a la biblioteca de ejemplo.',
+  'profile.resetConfirm': 'Pulsa otra vez para confirmar',
 
   'badge.first': 'Primer libro',
   'badge.ten': '10 libros',
@@ -274,6 +278,10 @@ const en: Record<StringKey, string> = {
   'profile.premium': 'Leora Premium',
   'profile.premiumCta': 'Go Premium',
   'profile.premiumActive': 'Premium active',
+  'profile.data': 'Data',
+  'profile.reset': 'Reset demo library',
+  'profile.resetHint': 'Clears your changes saved on this device and restores the sample library.',
+  'profile.resetConfirm': 'Tap again to confirm',
 
   'badge.first': 'First book',
   'badge.ten': '10 books',

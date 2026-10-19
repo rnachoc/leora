@@ -16,8 +16,9 @@ import { colors, fonts, radius, space, type } from '@/theme/tokens';
 export default function ProfileScreen() {
   const router = useRouter();
   const { t, locale, setLocale, formatNumber } = useI18n();
-  const { items, profile } = useLibrary();
+  const { items, profile, dispatch } = useLibrary();
   const [copied, setCopied] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const stats = readingStats(items);
   const pace = goalPace(stats.readThisYear, profile.yearlyGoal);
@@ -162,6 +163,27 @@ export default function ProfileScreen() {
               { value: 'es', label: 'Español' },
               { value: 'en', label: 'English' },
             ]}
+          />
+        </Card>
+
+        {/* Data */}
+        <Card style={{ gap: space.md }}>
+          <SectionTitle>{t('profile.data')}</SectionTitle>
+          <Text style={type.small}>{t('profile.resetHint')}</Text>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon="trash"
+            label={confirmReset ? t('profile.resetConfirm') : t('profile.reset')}
+            onPress={() => {
+              if (!confirmReset) {
+                setConfirmReset(true);
+                setTimeout(() => setConfirmReset(false), 3000);
+                return;
+              }
+              dispatch({ type: 'reset' });
+              setConfirmReset(false);
+            }}
           />
         </Card>
       </View>
