@@ -35,12 +35,18 @@ Leora is a mobile app for readers who want a gorgeous personal library of everyt
   <img src="docs/screenshots/book.jpg" width="200" alt="Book detail" />
   <img src="docs/screenshots/wrapped.jpg" width="200" alt="Year-in-books Wrapped" />
 </p>
+<p align="center">
+  <img src="docs/screenshots/onboarding-welcome.jpg" width="200" alt="Onboarding welcome" />
+  <img src="docs/screenshots/onboarding-books.jpg" width="200" alt="Pick books you loved" />
+  <img src="docs/screenshots/onboarding-guide.jpg" width="200" alt="App guide" />
+</p>
 </details>
 
 ## ✨ What it does
 
 | | Feature | Description |
 |---|---|---|
+| 👋 | **Guided onboarding** | A 6-step welcome questionnaire (pace, genres, moods, favourite books, goal) and a quick app guide, so recommendations work from minute one. |
 | 📖 | **Personal library** | Every book you've read, on a realistic bookshelf or a cover grid — switch with one tap. |
 | 📷 | **Add books in seconds** | Search by title/author, scan the ISBN barcode, or snap a photo of your shelf and let AI recognise the spines. |
 | ⭐ | **Rate & remember** | Star ratings, a short review, read date and status: *read, reading, want to read, did not finish*. |
@@ -94,6 +100,7 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - [x] Waitlist landing page
 - [ ] Paid traffic validation
 - [x] Real catalog search and covers
+- [x] Onboarding questionnaire and app guide
 - [ ] Supabase backend and auth
 - [ ] Barcode scanner & shelf-photo recognition
 - [ ] AI recommendation engine

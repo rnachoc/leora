@@ -10,6 +10,7 @@
 - [ ] Supabase project: schema, RLS, auth (email, Google, Apple)
 - [x] Real catalog search and covers (Open Library; Google Books optional with an API key)
 - [x] On-device persistence
+- [x] Onboarding questionnaire + app guide (hook into sign-up when auth lands)
 - [ ] ISBN barcode scanner
 - [ ] Shelf-photo recognition
 - [ ] AI recommendation Edge Function
