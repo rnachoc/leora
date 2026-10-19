@@ -94,9 +94,22 @@ export function PhotoTab() {
                       detected && selected.has(b.id) && styles.spineDetected,
                     ]}
                   >
-                    <Text numberOfLines={1} style={[styles.spineText, { color: inkFor(b.color), width: h - 20 }]}>
-                      {b.title}
-                    </Text>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        width: h - 16,
+                        height: 30,
+                        left: (30 - (h - 16)) / 2,
+                        top: (h - 30) / 2,
+                        transform: [{ rotate: '-90deg' }],
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text numberOfLines={1} style={[styles.spineText, { color: inkFor(b.color) }]}>
+                        {b.title}
+                      </Text>
+                    </View>
                   </LinearGradient>
                 );
               })}
@@ -185,12 +198,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   spineDetected: { borderColor: colors.goldBright },
-  spineText: {
-    fontFamily: fonts.display,
-    fontSize: 10,
-    textAlign: 'center',
-    transform: [{ rotate: '-90deg' }],
-  },
+  spineText: { fontFamily: fonts.display, fontSize: 10, textAlign: 'center' },
   plank: { height: 12, marginBottom: 18 },
   sweep: { position: 'absolute', top: 0, bottom: 0, width: 80 },
   item: {
