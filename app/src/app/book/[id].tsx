@@ -30,20 +30,25 @@ export default function BookScreen() {
   const [review, setReview] = useState(entry?.review ?? '');
   const [saved, setSaved] = useState(false);
   const [justFinished, setJustFinished] = useState(false);
-  useEffect(() => setReview(entry?.review ?? ''), [entry?.review]);
+  // Keep the editor in sync when the stored review changes (adjusting state during render, not in an effect).
+  const [storedReview, setStoredReview] = useState(entry?.review);
+  if (entry?.review !== storedReview) {
+    setStoredReview(entry?.review);
+    setReview(entry?.review ?? '');
+  }
 
   // Catalog books arrive without a synopsis: fetch it once and keep it on the book.
-  const [synopsis, setSynopsis] = useState(book?.synopsis[locale] ?? '');
+  const [fetched, setFetched] = useState<{ id: string; text: string }>();
+  const synopsis = book?.synopsis[locale] || (fetched?.id === book?.id ? fetched?.text : '') || '';
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    if (!book) return;
-    if (book.synopsis[locale]) return setSynopsis(book.synopsis[locale]);
+    if (!book || book.synopsis[locale]) return;
     const controller = new AbortController();
     fetchDescription(book, controller.signal)
       .then((text) => {
         if (!text) return;
         registerBooks([{ ...book, synopsis: { es: text, en: text } }]);
-        setSynopsis(text);
+        setFetched({ id: book.id, text });
       })
       .catch(() => {});
     return () => controller.abort();
