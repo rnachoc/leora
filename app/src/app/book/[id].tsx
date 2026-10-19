@@ -13,6 +13,7 @@ import { STATUSES } from '@/data/library';
 import { genreLabel } from '@/data/taxonomy';
 import { useI18n } from '@/i18n/I18nProvider';
 import { fetchDescription } from '@/lib/catalog';
+import { localToday as today } from '@/lib/dates';
 import { useLibrary } from '@/store/LibraryProvider';
 import { colors, fonts, radius, space, type, withAlpha } from '@/theme/tokens';
 
@@ -243,8 +244,6 @@ export default function BookScreen() {
     </View>
   );
 }
-
-const today = () => new Date().toISOString().slice(0, 10);
 
 const styles = StyleSheet.create({
   backdrop: { position: 'absolute', top: 0, left: 0, right: 0, height: 560 },

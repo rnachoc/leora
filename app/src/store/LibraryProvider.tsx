@@ -12,6 +12,7 @@ import {
   type ReadingStatus,
 } from '@/data/library';
 import type { GenreId, MoodId } from '@/data/taxonomy';
+import { localToday as today } from '@/lib/dates';
 
 /** Everything the welcome questionnaire collects. */
 export type OnboardingAnswers = {
@@ -45,8 +46,6 @@ const DEMO_STATE: State = { entries: DEMO_LIBRARY, profile: DEMO_PROFILE, dismis
 /** Bump the version when the stored shape changes incompatibly. */
 const STORAGE_KEY = 'leora:library:v1';
 type Stored = State & { books: Book[] };
-
-const today = () => new Date().toISOString().slice(0, 10);
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
