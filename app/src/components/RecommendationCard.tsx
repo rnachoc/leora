@@ -1,13 +1,13 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BookCover } from './BookCover';
 import { Icon } from './Icon';
+import { StoreButtons } from './StoreButtons';
 import { Button, Chip, tap } from './ui';
 import { genreLabel } from '@/data/taxonomy';
 import { useI18n } from '@/i18n/I18nProvider';
 import type { Recommendation } from '@/lib/recommend';
-import { storeLinks } from '@/lib/stores';
 import { useLibrary, type DismissReason } from '@/store/LibraryProvider';
 import { colors, fonts, radius, space, type, withAlpha } from '@/theme/tokens';
 
@@ -60,24 +60,7 @@ export function RecommendationCard({ rec, index }: { rec: Recommendation; index:
         <Text style={[type.body, { fontSize: 14 }]}>{why}</Text>
       </View>
 
-      <View>
-        <Text style={[type.label, { marginBottom: space.sm }]}>{t('discover.buy')}</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-          {storeLinks(book).map((s) => (
-            <Pressable
-              key={s.id}
-              onPress={() => {
-                tap();
-                Linking.openURL(s.url);
-              }}
-              style={({ pressed }) => [styles.store, pressed && { opacity: 0.7 }]}
-            >
-              <Icon name="cart" size={14} color={colors.text} />
-              <Text style={styles.storeLabel}>{s.label}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
+      <StoreButtons book={book} />
 
       {state === 'asking' ? (
         <View style={{ gap: space.sm }}>
@@ -142,17 +125,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   whyHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  store: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    height: 34,
-    paddingHorizontal: 12,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-  },
-  storeLabel: { fontFamily: fonts.medium, fontSize: 12.5, color: colors.text },
   reasons: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   actions: { flexDirection: 'row', gap: space.sm },
 });
