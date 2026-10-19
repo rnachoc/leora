@@ -9,13 +9,17 @@ import {
   type ReadingStatus,
 } from '@/data/library';
 
-type State = { entries: LibraryEntry[]; profile: Profile };
+export type DismissReason = 'read' | 'notForMe' | 'tooLong' | 'author';
+export type Dismissal = { bookId: string; reason: DismissReason };
+
+type State = { entries: LibraryEntry[]; profile: Profile; dismissed: Dismissal[] };
 
 type Action =
   | { type: 'add'; bookId: string; status: ReadingStatus; rating?: number }
   | { type: 'update'; bookId: string; patch: Partial<Omit<LibraryEntry, 'bookId'>> }
   | { type: 'remove'; bookId: string }
   | { type: 'useRecommendation' }
+  | { type: 'dismiss'; bookId: string; reason: DismissReason }
   | { type: 'setPremium'; value: boolean };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -51,6 +55,8 @@ function reducer(state: State, action: Action): State {
         ...state,
         profile: { ...state.profile, freeRecommendationsUsed: state.profile.freeRecommendationsUsed + 1 },
       };
+    case 'dismiss':
+      return { ...state, dismissed: [...state.dismissed, { bookId: action.bookId, reason: action.reason }] };
     case 'setPremium':
       return { ...state, profile: { ...state.profile, isPremium: action.value } };
   }
@@ -69,7 +75,11 @@ type LibraryValue = State & {
 const LibraryContext = createContext<LibraryValue | null>(null);
 
 export function LibraryProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, { entries: DEMO_LIBRARY, profile: DEMO_PROFILE });
+  const [state, dispatch] = useReducer(reducer, {
+    entries: DEMO_LIBRARY,
+    profile: DEMO_PROFILE,
+    dismissed: [],
+  });
 
   const value = useMemo<LibraryValue>(() => {
     const items = state.entries
