@@ -11,6 +11,10 @@ export type Book = {
   /** Base colour used for the generated cover and spine. */
   color: string;
   synopsis: Localized;
+  /** Real cover image (catalog). When missing or broken, a cover is generated from `color`. */
+  coverUrl?: string;
+  /** Where the record comes from: the bundled sample catalog or a live catalog API. */
+  source?: 'sample' | 'openlibrary' | 'googlebooks';
 };
 
 /**
@@ -695,8 +699,22 @@ export const CATALOG: Book[] = [
   },
 ];
 
-export const BOOKS_BY_ID: Record<string, Book> = Object.fromEntries(CATALOG.map((b) => [b.id, b]));
+/**
+ * Runtime registry: the sample catalog plus every book fetched from a live
+ * catalog (search, scan, photo) so the rest of the app can resolve it by id.
+ */
+const REGISTRY = new Map<string, Book>(CATALOG.map((b) => [b.id, b]));
 
 export function getBook(id: string): Book | undefined {
-  return BOOKS_BY_ID[id];
+  return REGISTRY.get(id);
+}
+
+/** Adds or updates books in the registry (keeps fields we already had, e.g. a found cover). */
+export function registerBooks(books: Book[]) {
+  for (const b of books) REGISTRY.set(b.id, { ...REGISTRY.get(b.id), ...b });
+}
+
+/** Books that didn't ship with the app — persisted so they survive a restart. */
+export function remoteBooks(): Book[] {
+  return [...REGISTRY.values()].filter((b) => b.source && b.source !== 'sample');
 }
