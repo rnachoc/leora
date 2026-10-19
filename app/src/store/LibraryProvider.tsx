@@ -5,10 +5,23 @@ import {
   DEMO_LIBRARY,
   DEMO_PROFILE,
   FREE_RECOMMENDATIONS_PER_MONTH,
+  usernameFrom,
   type LibraryEntry,
   type Profile,
+  type ReadingPace,
   type ReadingStatus,
 } from '@/data/library';
+import type { GenreId, MoodId } from '@/data/taxonomy';
+
+/** Everything the welcome questionnaire collects. */
+export type OnboardingAnswers = {
+  name: string;
+  readingPace: ReadingPace;
+  favoriteGenres: GenreId[];
+  favoriteMoods: MoodId[];
+  favoriteBookIds: string[];
+  yearlyGoal: number;
+};
 
 export type DismissReason = 'read' | 'notForMe' | 'tooLong' | 'author';
 export type Dismissal = { bookId: string; reason: DismissReason };
@@ -23,7 +36,9 @@ type Action =
   | { type: 'dismiss'; bookId: string; reason: DismissReason }
   | { type: 'setPremium'; value: boolean }
   | { type: 'hydrate'; state: State }
-  | { type: 'reset' };
+  | { type: 'reset' }
+  | { type: 'startDemo' }
+  | { type: 'completeOnboarding'; answers: OnboardingAnswers };
 
 const DEMO_STATE: State = { entries: DEMO_LIBRARY, profile: DEMO_PROFILE, dismissed: [] };
 
@@ -72,6 +87,28 @@ function reducer(state: State, action: Action): State {
       return action.state;
     case 'reset':
       return DEMO_STATE;
+    case 'startDemo':
+      return { ...DEMO_STATE, profile: { ...DEMO_PROFILE, onboarded: true } };
+    case 'completeOnboarding': {
+      // A fresh library: the books they loved, rated 5★. No read date, so they
+      // don't count towards this year's goal.
+      const a = action.answers;
+      return {
+        entries: a.favoriteBookIds.map((bookId) => ({ bookId, status: 'read' as const, rating: 5, addedAt: today() })),
+        dismissed: [],
+        profile: {
+          name: a.name.trim(),
+          username: usernameFrom(a.name),
+          yearlyGoal: a.yearlyGoal,
+          isPremium: false,
+          freeRecommendationsUsed: 0,
+          onboarded: true,
+          readingPace: a.readingPace,
+          favoriteGenres: a.favoriteGenres,
+          favoriteMoods: a.favoriteMoods,
+        },
+      };
+    }
   }
 }
 
