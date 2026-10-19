@@ -167,7 +167,12 @@ export default function DiscoverScreen() {
             {mode === 'like' && (
               <View>
                 <Text style={[type.small, { marginBottom: space.md }]}>{t('discover.pickLike')}</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginHorizontal: -space.xl }}
+                  contentContainerStyle={{ gap: space.md, paddingHorizontal: space.xl }}
+                >
                   {favourites.map(({ book }) => {
                     const active = likeId === book.id;
                     return (
