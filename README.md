@@ -71,7 +71,7 @@ npm run typecheck    # TypeScript strict check
 
 > Or just open the **[live web demo](https://rnachoc.github.io/leora/app/)** — it's deployed to GitHub Pages on every push to `main`.
 >
-> The current version is an **interactive prototype** running on sample data. Backend (Supabase), auth and the AI recommendation engine are next on the [roadmap](docs/ROADMAP.md).
+> The current version is an **interactive prototype**: catalog search and covers are real (Open Library) and your library is saved on the device; it starts from a sample library. Backend (Supabase), auth and the AI recommendation engine are next on the [roadmap](docs/ROADMAP.md).
 
 ## 🏗️ Tech stack
 
@@ -81,7 +81,7 @@ npm run typecheck    # TypeScript strict check
 | Navigation | expo-router | File-based routing, deep links for public profiles |
 | Backend | Supabase (Postgres, Auth, Storage, Edge Functions) | Fast MVP, row-level security, generous free tier |
 | Auth | Email · Google · Sign in with Apple | Apple sign-in is mandatory on iOS when offering Google |
-| Catalog | Google Books + Open Library (ISBN) | Real catalog data — the AI never invents titles or links |
+| Catalog | Open Library (live) · Google Books optional | Real books and covers — the AI never invents titles or links |
 | AI | LLM ranking over real catalog candidates | Explainable picks grounded in the user's library |
 | Monetization | Freemium (RevenueCat) + affiliate links | 3 free recommendations/month, Premium unlimited |
 
@@ -93,7 +93,8 @@ More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - [x] Interactive prototype
 - [x] Waitlist landing page
 - [ ] Paid traffic validation
-- [ ] Supabase backend, auth and real catalog search
+- [x] Real catalog search and covers
+- [ ] Supabase backend and auth
 - [ ] Barcode scanner & shelf-photo recognition
 - [ ] AI recommendation engine
 - [ ] Premium subscription & affiliate links

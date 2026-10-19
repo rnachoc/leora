@@ -8,7 +8,8 @@
 
 ## Phase 1 — MVP (Nov–Dec 2026)
 - [ ] Supabase project: schema, RLS, auth (email, Google, Apple)
-- [ ] Real catalog search (Google Books + Open Library)
+- [x] Real catalog search and covers (Open Library; Google Books optional with an API key)
+- [x] On-device persistence
 - [ ] ISBN barcode scanner
 - [ ] Shelf-photo recognition
 - [ ] AI recommendation Edge Function
